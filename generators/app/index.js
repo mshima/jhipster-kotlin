@@ -18,7 +18,6 @@
  */
 /* eslint-disable consistent-return */
 const BaseGenerator = require('generator-jhipster/generators/app');
-const { displayLogo } = require('./util');
 
 module.exports = class extends BaseGenerator {
     constructor(args, opts) {
@@ -35,7 +34,6 @@ module.exports = class extends BaseGenerator {
         // Override logo when we run khipster command
         const initializer = {
             ...super._initializing(),
-            displayLogo,
         };
 
         return initializer;
