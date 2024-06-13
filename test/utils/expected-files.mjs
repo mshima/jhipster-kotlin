@@ -1,4 +1,6 @@
-const constants = require('generator-jhipster/generators/generator-constants');
+import khipsterconstants from '../../generators/generator-kotlin-constants.cjs';
+
+const { jhipsterConstants: constants } = khipsterconstants;
 
 const TEST_DIR = constants.TEST_DIR;
 const CLIENT_MAIN_SRC_DIR = constants.CLIENT_MAIN_SRC_DIR;
@@ -892,4 +894,4 @@ const expectedFiles = {
     cypressWithOauth2: [`${CLIENT_TEST_SRC_DIR}cypress/support/oauth2.ts`],
 };
 
-module.exports = expectedFiles;
+export default expectedFiles;

@@ -1,7 +1,9 @@
 const { expect } = require('expect');
 
-const { GENERATOR_JHIPSTER } = require('generator-jhipster/generators/generator-constants');
-const { skipPrettierHelpers: helpers } = require('../utils/utils');
+const { skipPrettierHelpers: helpers } = require('../utils/utils.cjs');
+const { jhipsterConstants } = require('../../generators/generator-kotlin-constants.cjs');
+
+const { GENERATOR_JHIPSTER } = jhipsterConstants;
 
 const testOptions = data => {
     const { generatorPath, customOptions, contextBuilder = () => helpers.create(generatorPath) } = data;

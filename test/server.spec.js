@@ -1,19 +1,20 @@
-const { expect } = require('expect');
-const path = require('path');
-const helpers = require('yeoman-test');
+import { expect } from 'expect';
+import { skipPrettierHelpers as helpers } from './utils/utils.mjs';
 
-const { JWT, OAUTH2 } = require('generator-jhipster/jdl/jhipster/authentication-types');
-const { GATEWAY, MICROSERVICE } = require('generator-jhipster/jdl/jhipster/application-types');
-const { CAFFEINE, EHCACHE } = require('generator-jhipster/jdl/jhipster/cache-types');
-const { SQL, H2_MEMORY, POSTGRESQL } = require('generator-jhipster/jdl/jhipster/database-types');
-const { MAVEN } = require('generator-jhipster/jdl/jhipster/build-tool-types');
+import { applicationTypes, authenticationTypes, cacheTypes, buildToolTypes, databaseTypes } from '../generators/jdl.mjs';
+
+const { JWT, OAUTH2 } = authenticationTypes;
+const { GATEWAY, MICROSERVICE } = applicationTypes;
+const { CAFFEINE, EHCACHE } = cacheTypes;
+const { SQL, H2_MEMORY, POSTGRESQL } = databaseTypes;
+const { MAVEN } = buildToolTypes;
 
 describe('JHipster server generator', () => {
     describe('generate server with ehcache', () => {
         let runResult;
         before(async () => {
             runResult = await helpers
-                .create(path.join(__dirname, '../generators/app'))
+                .create('jhipster:app')
                 .withOptions({
                     withGeneratedFlag: true,
                     blueprints: 'kotlin',
@@ -52,7 +53,7 @@ describe('JHipster server generator', () => {
         let runResult;
         before(async () => {
             runResult = await helpers
-                .create(path.join(__dirname, '../generators/app'))
+                .create('jhipster:app')
                 .withOptions({
                     withGeneratedFlag: true,
                     blueprints: 'kotlin',
@@ -91,7 +92,7 @@ describe('JHipster server generator', () => {
         let runResult;
         before(async () => {
             runResult = await helpers
-                .create(path.join(__dirname, '../generators/app'))
+                .create('jhipster:app')
                 .withOptions({
                     withGeneratedFlag: true,
                     blueprints: 'kotlin',
@@ -123,7 +124,7 @@ describe('JHipster server generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         blueprints: 'kotlin',
                         defaults: true,

@@ -9,7 +9,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ const blueprint = packageFolderName.startsWith('jhipster-') ? `generator-${packa
 
 (async () => {
     const { runJHipster, done, logger } = await import('generator-jhipster/esm/cli');
-    const { displayLogo } = await import('./logo.mjs');
+    const { printLogo } = await import('./logo.mjs');
     const executableName = Object.keys(bin)[0];
 
     runJHipster({
@@ -39,7 +39,7 @@ const blueprint = packageFolderName.startsWith('jhipster-') ? `generator-${packa
         blueprints: {
             [blueprint]: version,
         },
-        printLogo: displayLogo,
+        printLogo,
         lookups: [{ packagePaths: [packagePath], lookups: ['generators'] }],
     }).catch(done);
 

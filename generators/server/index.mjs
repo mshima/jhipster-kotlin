@@ -16,6 +16,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default } from './index.js';
-export { serverFiles as files } from './files.js';
-export * from './needles.cjs';
+export { default } from './generator.cjs';

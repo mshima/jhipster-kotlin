@@ -46,7 +46,13 @@ function createTestHelpers(options = {}) {
         settings: { ...DEFAULT_TEST_SETTINGS, ...options.settings },
         environmentOptions: { ...DEFAULT_TEST_ENV_OPTIONS, ...environmentOptions, sharedOptions },
         generatorOptions: { ...DEFAULT_TEST_OPTIONS, ...options.generatorOptions },
-        createEnv: (...args) => EnvironmentBuilder.createEnv(...args),
+        createEnv: (...args) => {
+            const env = EnvironmentBuilder.createEnv(...args);
+            env.lookup({
+                packagePaths: [path.join(__dirname, '../..')],
+            });
+            return env;
+        },
     };
     return createHelpers(newOptions);
 }

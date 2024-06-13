@@ -19,6 +19,7 @@
     },
     "license": "Apache-2.0",
     "author": "Sendil Kumar N <sendilkumarn@live.com> (https://sendilkumarn.com)",
+    "type": "module",
     "exports": {
         "./cli/": "./cli/*",
         "./package.json": "./package.json",

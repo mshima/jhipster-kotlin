@@ -22,7 +22,7 @@ import { basename, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 // import testSupport from '../../test/support/index.cjs';
-import Generator from './index.js';
+import Generator from './index.mjs';
 
 const { snakeCase } = lodash;
 //  const { testBlueprintSupport } = testSupport;
@@ -50,7 +50,7 @@ describe(`JHipster ${generator} generator`, () => {
     //  describe('blueprint support', () => testBlueprintSupport(generator));
     describe('exported files', () => {
         it('should match snapshot', async () => {
-            expect((await import('./files.js')).serverFiles).toMatchSnapshot();
+            expect((await import('./files.cjs')).serverFiles).toMatchSnapshot();
         });
     });
 });

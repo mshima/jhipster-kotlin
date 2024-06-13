@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,9 +24,9 @@ const baseServerFiles = require('generator-jhipster/generators/entity-server/fil
 const { SQL } = require('generator-jhipster/jdl/jhipster/database-types');
 const { EHCACHE, CAFFEINE, INFINISPAN, REDIS } = require('generator-jhipster/jdl/jhipster/cache-types');
 
-const { writeEntityCouchbaseFiles } = require('./files-couchbase');
-const NeedleServerChacheKt = require('./needle-server-cache-kt');
-const { makeKotlinServerFiles } = require('../util');
+const { writeEntityCouchbaseFiles } = require('./files-couchbase.cjs');
+const NeedleServerChacheKt = require('./needle-server-cache-kt.cjs');
+const { makeKotlinServerFiles } = require('../util.cjs');
 
 /* Constants use throughout */
 const SERVER_MAIN_SRC_KOTLIN_DIR = `${constants.MAIN_DIR}kotlin/`;

@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ const os = require('os');
 
 const shelljs = require('shelljs');
 const ServerGenerator = require('generator-jhipster/generators/server');
-const writeFiles = require('./files').writeFiles;
-const kotlinConstants = require('../generator-kotlin-constants');
+const writeFiles = require('./files.cjs').writeFiles;
+const kotlinConstants = require('../generator-kotlin-constants.cjs');
 
 module.exports = class extends ServerGenerator {
     constructor(args, opts, features) {

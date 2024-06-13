@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@
 /* eslint-disable consistent-return */
 const chalk = require('chalk');
 const EntityServerGenerator = require('generator-jhipster/generators/entity-server');
-const writeFiles = require('./files').writeFiles;
+const writeFiles = require('./files.cjs').writeFiles;
 
 module.exports = class extends EntityServerGenerator {
     constructor(args, options, features) {

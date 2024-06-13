@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,10 +24,10 @@ const { MAIN_DIR, TEST_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_RES_DIR } = require
 const cheerio = require('cheerio');
 
 const { GRADLE, MAVEN } = require('generator-jhipster/jdl/jhipster/build-tool-types');
-const kotlinConstants = require('../generator-kotlin-constants');
-const { writeCouchbaseFiles } = require('./files-couchbase');
-const { writeSqlFiles } = require('./files-sql');
-const { makeKotlinServerFiles } = require('../util');
+const kotlinConstants = require('../generator-kotlin-constants.cjs');
+const { writeCouchbaseFiles } = require('./files-couchbase.cjs');
+const { writeSqlFiles } = require('./files-sql.cjs');
+const { makeKotlinServerFiles } = require('../util.cjs');
 
 /* Constants use throughout */
 const SERVER_MAIN_KOTLIN_SRC_DIR = `${MAIN_DIR}kotlin/`;

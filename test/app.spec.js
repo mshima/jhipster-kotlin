@@ -1,34 +1,35 @@
-const path = require('path');
-const { expect } = require('expect');
-const assert = require('yeoman-assert');
+import { expect } from 'expect';
+import assert from 'yeoman-assert';
 
-const { GATEWAY, MICROSERVICE, MONOLITH } = require('generator-jhipster/jdl/jhipster/application-types');
-const {
-    CASSANDRA,
-    COUCHBASE,
-    H2_DISK,
-    H2_MEMORY,
-    MARIADB,
-    MSSQL,
-    MONGODB,
-    MYSQL,
-    NEO4J,
-    POSTGRESQL,
-    SQL,
-} = require('generator-jhipster/jdl/jhipster/database-types');
-const { SESSION } = require('generator-jhipster/jdl/jhipster/authentication-types');
-const { EHCACHE, HAZELCAST } = require('generator-jhipster/jdl/jhipster/cache-types');
-const cacheProviders = require('generator-jhipster/jdl/jhipster/cache-types');
-const { CONSUL, EUREKA } = require('generator-jhipster/jdl/jhipster/service-discovery-types');
-const { JWT } = require('generator-jhipster/jdl/jhipster/authentication-types');
-const { CUCUMBER, PROTRACTOR } = require('generator-jhipster/jdl/jhipster/test-framework-types');
-const { ANGULAR_X, REACT } = require('generator-jhipster/jdl/jhipster/client-framework-types');
-const { GRADLE, MAVEN } = require('generator-jhipster/jdl/jhipster/build-tool-types');
+import khipsterconstants from '../generators/generator-kotlin-constants.cjs';
 
-const constants = require('generator-jhipster/generators/generator-constants');
-const { skipPrettierHelpers: helpers, shouldBeV3DockerfileCompatible } = require('./utils/utils');
+import {
+    applicationTypes,
+    authenticationTypes,
+    cacheTypes,
+    serviceDiscoveryTypes,
+    testFrameworkTypes,
+    clientFrameworkTypes,
+    buildToolTypes,
+    databaseTypes,
+} from '../generators/jdl.mjs';
 
-const expectedFiles = require('./utils/expected-files');
+import { skipPrettierHelpers as helpers, shouldBeV3DockerfileCompatible } from './utils/utils.mjs';
+
+import expectedFiles from './utils/expected-files.mjs';
+
+const { jhipsterConstants: constants } = khipsterconstants;
+
+const { GATEWAY, MICROSERVICE, MONOLITH } = applicationTypes;
+const { CASSANDRA, COUCHBASE, H2_DISK, H2_MEMORY, MARIADB, MSSQL, MONGODB, MYSQL, NEO4J, POSTGRESQL, SQL } = databaseTypes;
+const { SESSION } = authenticationTypes;
+const { EHCACHE, HAZELCAST } = cacheTypes;
+const cacheProviders = cacheTypes;
+const { CONSUL, EUREKA } = serviceDiscoveryTypes;
+const { JWT } = authenticationTypes;
+const { CUCUMBER, PROTRACTOR } = testFrameworkTypes;
+const { ANGULAR_X, REACT } = clientFrameworkTypes;
+const { GRADLE, MAVEN } = buildToolTypes;
 
 const { CLIENT_MAIN_SRC_DIR, MAIN_DIR, SERVER_MAIN_RES_DIR } = constants;
 const NO_CACHE_PROVIDER = cacheProviders.NO;
@@ -40,7 +41,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         withGeneratedFlag: true,
                         blueprints: 'kotlin',
@@ -89,7 +90,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiPrefix: 'test',
                         withGeneratedFlag: true,
@@ -132,7 +133,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         blueprints: 'kotlin',
                     })
@@ -175,7 +176,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -213,7 +214,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiPrefix: 'test',
                         withGeneratedFlag: true,
@@ -263,7 +264,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiPrefix: 'test',
                         withGeneratedFlag: true,
@@ -303,7 +304,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -344,7 +345,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -388,7 +389,7 @@ describe('JHipster generator for App generator', () => {
         describe(COUCHBASE, () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -432,7 +433,7 @@ describe('JHipster generator for App generator', () => {
         describe(NEO4J, () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -476,7 +477,7 @@ describe('JHipster generator for App generator', () => {
         describe(MSSQL, () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -518,7 +519,7 @@ describe('JHipster generator for App generator', () => {
         describe(CASSANDRA, () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -562,7 +563,7 @@ describe('JHipster generator for App generator', () => {
         describe('cassandra no i18n', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -601,7 +602,7 @@ describe('JHipster generator for App generator', () => {
         describe('MySQL and elasticsearch', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -643,7 +644,7 @@ describe('JHipster generator for App generator', () => {
         describe('couchbase FTS', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -684,7 +685,7 @@ describe('JHipster generator for App generator', () => {
         describe('no database', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -731,7 +732,7 @@ describe('JHipster generator for App generator', () => {
         describe('oauth2', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -774,7 +775,7 @@ describe('JHipster generator for App generator', () => {
         describe('oauth2 + elasticsearch', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -815,7 +816,7 @@ describe('JHipster generator for App generator', () => {
         describe('oauth2 + mongodb', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -855,7 +856,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -912,7 +913,7 @@ describe('JHipster generator for App generator', () => {
         describe('hazelcast', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -953,7 +954,7 @@ describe('JHipster generator for App generator', () => {
         describe('Infinispan', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -995,7 +996,7 @@ describe('JHipster generator for App generator', () => {
         describe('Infinispan and Eureka', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1038,7 +1039,7 @@ describe('JHipster generator for App generator', () => {
         describe('Memcached', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1080,7 +1081,7 @@ describe('JHipster generator for App generator', () => {
         describe('Redis', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1122,7 +1123,7 @@ describe('JHipster generator for App generator', () => {
         describe('Messaging with Kafka configuration', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1172,7 +1173,7 @@ describe('JHipster generator for App generator', () => {
         describe('API first using OpenAPI-generator (maven)', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1225,7 +1226,7 @@ describe('JHipster generator for App generator', () => {
         describe('API first using OpenAPI-generator (gradle)', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1279,7 +1280,7 @@ describe('JHipster generator for App generator', () => {
         describe('package names', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1318,7 +1319,7 @@ describe('JHipster generator for App generator', () => {
         describe('bad application name for java', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1359,7 +1360,7 @@ describe('JHipster generator for App generator', () => {
         describe('application names', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1399,7 +1400,7 @@ describe('JHipster generator for App generator', () => {
         describe('no i18n', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1436,7 +1437,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1481,7 +1482,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1519,7 +1520,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1559,7 +1560,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1602,7 +1603,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1646,7 +1647,7 @@ describe('JHipster generator for App generator', () => {
         let runResult;
         before(async () => {
             runResult = await helpers
-                .create(path.join(__dirname, '../generators/app'))
+                .create('jhipster:app')
                 .withOptions({
                     fromCli: true,
                     skipInstall: true,
@@ -1687,7 +1688,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiPrefix: 'test',
                         withGeneratedFlag: true,
@@ -1743,7 +1744,7 @@ describe('JHipster generator for App generator', () => {
             let runResult;
             before(async () => {
                 runResult = await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiPrefix: 'test',
                         withGeneratedFlag: true,
@@ -1786,7 +1787,7 @@ describe('JHipster generator for App generator', () => {
             // let runResult;
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiPrefix: 'test',
                         withGeneratedFlag: true,
@@ -1831,7 +1832,7 @@ describe('JHipster generator for App generator', () => {
         describe('gateway with eureka', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1872,7 +1873,7 @@ describe('JHipster generator for App generator', () => {
         describe('gateway with eureka and rate limiting', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1913,7 +1914,7 @@ describe('JHipster generator for App generator', () => {
         describe('microservice with eureka', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1955,7 +1956,7 @@ describe('JHipster generator for App generator', () => {
         describe('monolith with eureka', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -1999,7 +2000,7 @@ describe('JHipster generator for App generator', () => {
         describe('microservice with gradle and eureka', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -2046,7 +2047,7 @@ describe('JHipster generator for App generator', () => {
         describe('gateway with consul', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -2087,7 +2088,7 @@ describe('JHipster generator for App generator', () => {
         describe('gateway with consul and rate limiting', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -2128,7 +2129,7 @@ describe('JHipster generator for App generator', () => {
         describe('microservice with consul', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -2171,7 +2172,7 @@ describe('JHipster generator for App generator', () => {
         describe('gateway with no service discovery', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
@@ -2212,7 +2213,7 @@ describe('JHipster generator for App generator', () => {
         describe('microservice with no service discovery', () => {
             before(async () => {
                 await helpers
-                    .create(path.join(__dirname, '../generators/app'))
+                    .create('jhipster:app')
                     .withOptions({
                         jhiprefix: 'test',
                         withgeneratedflag: true,
