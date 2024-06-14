@@ -91,7 +91,7 @@ jobs:
               working-directory: jhipster-kotlin
             - uses: jhipster/actions/setup-runner@v0
               with:
-                  node-version: 16
+                  node-version: 20
                   java-version: 11
                   binary-dir: ${{ github.workspace }}/jhipster-kotlin/cli
             - name: 'SETUP: environment'
@@ -111,7 +111,7 @@ jobs:
             - name: 'GENERATION: config'
               run: $KHI_SCRIPTS/11-generate-config.sh
             - name: 'GENERATION: project'
-              run: $KHI_SCRIPTS/12-generate-project.sh --skip-jhipster-dependencies --skip-install ${{ matrix.extra-args }} ${{ matrix.new-extra-args }}
+              run: $KHI_SCRIPTS/12-generate-project.sh --skip-jhipster-dependencies --skip-install --skip-ktlint-format ${{ matrix.extra-args }} ${{ matrix.new-extra-args }}
             - name: 'GENERATION: workspace git'
               if: matrix.workspaces == 'true'
               run: |
@@ -122,6 +122,9 @@ jobs:
             #----------------------------------------------------------------------
             # Detect changes against base commit
             #----------------------------------------------------------------------
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 16
             - name: 'MERGE: generate base'
               continue-on-error: true
               id: base-app
@@ -130,7 +133,7 @@ jobs:
                   !contains(github.event.pull_request.labels.*.name, 'pr: disable-compare')
               uses: ./jhipster-kotlin/.github/actions/compare-base
               with:
-                  extra-args: '--skip-jhipster-dependencies ${{ matrix.extra-args }}'
+                  extra-args: '--skip-jhipster-dependencies --skip-ktlint-format --with-entities ${{ matrix.extra-args }}'
             - name: 'MERGE: compare changes'
               continue-on-error: true
               id: compare
@@ -138,6 +141,9 @@ jobs:
               uses: ./jhipster-kotlin/.github/actions/compare
               with:
                   application-path: ${{ steps.base-app.outputs.application-path }}
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
             #----------------------------------------------------------------------
             # Launch tests
             #----------------------------------------------------------------------
@@ -163,6 +169,7 @@ jobs:
               if: steps.compare.outputs.equals != 'true'
               run: npm run ci:e2e:prepare
               timeout-minutes: 5
+            - run: npm run preci:e2e:server:start --if-present
             - name: 'E2E: Run'
               id: e2e
               if: steps.compare.outputs.equals != 'true'

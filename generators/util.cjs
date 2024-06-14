@@ -11,6 +11,11 @@ const getPath = pathName => {
     return pathName;
 };
 
+const convertToKotlinFile = file => file
+  .replace('.java', '.kt')
+  .replace(SERVER_MAIN_SRC_DIR, SERVER_MAIN_SRC_KOTLIN_DIR)
+  .replace(SERVER_TEST_SRC_DIR, SERVER_TEST_SRC_KOTLIN_DIR);
+
 const makeKotlinServerFiles = function (files) {
     const keys = Object.keys(files);
     const out = {};
@@ -20,24 +25,28 @@ const makeKotlinServerFiles = function (files) {
             ...file,
             path: getPath(file.path),
             templates: file.templates
-                .filter(template => (typeof template.file === 'string' ? template.file.indexOf('package-info') === -1 : true))
+                .filter(template => {
+                  const { file = template } = template;
+                  if (typeof file === 'string' && (file.includes('package-info') || file.includes('src/main/docker'))) return false;
+                  return true;
+                })
                 .map(template => {
                     if (template.file) {
                         if (typeof template.file !== 'function') {
                             let templateName = template.file;
                             if (template.file.indexOf('.java') !== -1) {
-                                templateName = template.file.replace('.java', '.kt');
+                                templateName = convertToKotlinFile(template.file);
                             }
                             return {
                                 ...template,
                                 file: templateName,
-                                renameTo: template.renameTo ? generator => template.renameTo(generator).replace('.java', '.kt') : null,
+                                ...(template.renameTo ? { renameTo: (...args) => convertToKotlinFile(template.renameTo(...args)) } : {}),
                             };
                         }
                         return {
                             ...template,
                             file: generator => template.file(generator).replace('.java', '.kt'),
-                            renameTo: template.renameTo ? generator => template.renameTo(generator).replace('.java', '.kt') : null,
+                            ...(template.renameTo ? { renameTo: (...args) => convertToKotlinFile(template.renameTo(...args)) } : {}),
                         };
                     }
                     return template;

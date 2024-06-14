@@ -30,19 +30,19 @@ export function printLogo() {
     console.log(chalk.white('Welcome to KHipster ') + chalk.yellow(`v${packagejs.version}`));
     console.log(chalk.white(`Application files will be generated in folder: ${chalk.yellow(process.cwd())}`));
     console.log(
-        chalk.blue(' _______________________________________________________________________________________________________________\n')
+        chalk.blue(' _______________________________________________________________________________________________________________\n'),
     );
     console.log(
-        chalk.white(`  Documentation for creating an application is at ${chalk.yellow('https://www.jhipster.tech/creating-an-app/')}`)
+        chalk.white(`  Documentation for creating an application is at ${chalk.yellow('https://www.jhipster.tech/creating-an-app/')}`),
     );
     console.log(
         chalk.white(
             `  If you find KHipster useful, consider sponsoring the our parent project at ${chalk.yellow(
-                'https://opencollective.com/generator-jhipster'
-            )}`
-        )
+                'https://opencollective.com/generator-jhipster',
+            )}`,
+        ),
     );
     console.log(
-        chalk.blue(' _______________________________________________________________________________________________________________\n')
+        chalk.blue(' _______________________________________________________________________________________________________________\n'),
     );
 }

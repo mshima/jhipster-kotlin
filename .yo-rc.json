@@ -1,0 +1,39 @@
+{
+    "generator-jhipster": {
+        "additionalSubGenerators": "kotlin",
+        "baseName": "kotlin",
+        "cli": true,
+        "entities": [],
+        "generators": {
+            "kotlin": {
+                "command": false,
+                "priorities": [
+                    "initializing",
+                    "prompting",
+                    "configuring",
+                    "composing",
+                    "loading",
+                    "preparing",
+                    "writing",
+                    "writingEntities",
+                    "postWriting",
+                    "postWritingEntities",
+                    "install",
+                    "end"
+                ],
+                "sbs": null,
+                "written": true
+            },
+            "server": {
+                "command": false,
+                "priorities": ["initializing", "composing"],
+                "sbs": true,
+                "written": true
+            }
+        },
+        "jhipsterVersion": "8.5.0",
+        "localBlueprint": false,
+        "sampleWritten": true,
+        "subGenerators": ["server"]
+    }
+}

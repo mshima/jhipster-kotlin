@@ -1,33 +1,3 @@
-import migration from './migration.cjs';
-
-const {
-    applicationOptions,
-    applicationTypes,
-    authenticationTypes,
-    binaryOptions,
-    buildToolTypes,
-    cacheTypes,
-    clientFrameworkTypes,
-    databaseTypes,
-    deploymentOptions,
-    entityOptions,
-    entityTableNameCreator,
-    fieldTypes,
-    jsonEntity,
-    kubernetesPlatformTypes,
-    messageBrokerTypes,
-    monitoringTypes,
-    openapiOptions,
-    openshiftPlatformTypes,
-    relationshipOptions,
-    relationshipTypes,
-    reservedKeywords,
-    searchEngineTypes,
-    serviceDiscoveryTypes,
-    testFrameworkTypes,
-    unaryOptions,
-} = migration;
-
 export {
     applicationOptions,
     applicationTypes,
@@ -54,4 +24,4 @@ export {
     serviceDiscoveryTypes,
     testFrameworkTypes,
     unaryOptions,
-};
+} from 'generator-jhipster/jdl';
