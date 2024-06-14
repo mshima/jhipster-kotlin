@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const constants = require('generator-jhipster/generators/generator-constants');
+const constants = require('../jhipster-constants.cjs');
 
 const SERVER_MAIN_SRC_DIR = `${constants.MAIN_DIR}kotlin/`;
 const SERVER_MAIN_RES_DIR = constants.SERVER_MAIN_RES_DIR;

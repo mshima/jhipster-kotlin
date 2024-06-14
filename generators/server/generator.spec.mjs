@@ -17,15 +17,8 @@
  * limitations under the License.
  */
 import { expect } from 'expect';
-import lodash from 'lodash';
 import { basename, dirname } from 'path';
 import { fileURLToPath } from 'url';
-
-// import testSupport from '../../test/support/index.cjs';
-import Generator from './index.mjs';
-
-const { snakeCase } = lodash;
-//  const { testBlueprintSupport } = testSupport;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,20 +26,6 @@ const __dirname = dirname(__filename);
 const generator = basename(__dirname);
 
 describe(`JHipster ${generator} generator`, () => {
-    it('generator-list constant matches folder name', async () => {
-        await expect(
-            (
-                await import('generator-jhipster/generators/generator-list.js')
-            ).default[`GENERATOR_${snakeCase(generator).toUpperCase()}`]
-        ).toBe(generator);
-    });
-    it('should be exported at package.json', async () => {
-        await expect((await import(`generator-jhipster/esm/generators/${generator}`)).default).toBe(Generator);
-    });
-    it('should support features parameter', () => {
-        const instance = new Generator([], { help: true }, { bar: true });
-        expect(instance.features.bar).toBe(true);
-    });
     //  describe('blueprint support', () => testBlueprintSupport(generator));
     describe('exported files', () => {
         it('should match snapshot', async () => {

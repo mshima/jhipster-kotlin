@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const baseCouchbaseFiles = require('generator-jhipster/generators/server/files-couchbase').couchbaseFiles;
+const baseCouchbaseFiles = require('./jhipster-files-couchbase.cjs').couchbaseFiles;
 const { makeKotlinServerFiles } = require('../util.cjs');
 
 const couchbaseFiles = makeKotlinServerFiles(baseCouchbaseFiles);

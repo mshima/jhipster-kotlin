@@ -18,15 +18,16 @@
  */
 const path = require('path');
 const utils = require('generator-jhipster/generators/utils');
-const constants = require('generator-jhipster/generators/generator-constants');
 const baseServerFiles = require('generator-jhipster/generators/entity-server/files').serverFiles;
+const { databaseTypes, cacheTypes } = require('../migration.cjs');
 
-const { SQL } = require('generator-jhipster/jdl/jhipster/database-types');
-const { EHCACHE, CAFFEINE, INFINISPAN, REDIS } = require('generator-jhipster/jdl/jhipster/cache-types');
-
+const constants = require('../jhipster-constants.cjs');
 const { writeEntityCouchbaseFiles } = require('./files-couchbase.cjs');
 const NeedleServerChacheKt = require('./needle-server-cache-kt.cjs');
 const { makeKotlinServerFiles } = require('../util.cjs');
+
+const { SQL } = databaseTypes;
+const { EHCACHE, CAFFEINE, INFINISPAN, REDIS } = cacheTypes;
 
 /* Constants use throughout */
 const SERVER_MAIN_SRC_KOTLIN_DIR = `${constants.MAIN_DIR}kotlin/`;

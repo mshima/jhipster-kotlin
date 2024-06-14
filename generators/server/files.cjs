@@ -19,11 +19,13 @@
 const path = require('path');
 // const fs = require('fs');
 const serverCleanup = require('generator-jhipster/generators/cleanup');
-const baseServerFiles = require('generator-jhipster/generators/server/files').serverFiles;
-const { MAIN_DIR, TEST_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_RES_DIR } = require('generator-jhipster/generators/generator-constants');
 const cheerio = require('cheerio');
 
-const { GRADLE, MAVEN } = require('generator-jhipster/jdl/jhipster/build-tool-types');
+const { MAIN_DIR, TEST_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_RES_DIR } = require('../jhipster-constants.cjs');
+const { buildToolTypes } = require('../migration.cjs');
+
+const { GRADLE, MAVEN } = buildToolTypes;
+const baseServerFiles = require('./jhipster-files.cjs').serverFiles;
 const kotlinConstants = require('../generator-kotlin-constants.cjs');
 const { writeCouchbaseFiles } = require('./files-couchbase.cjs');
 const { writeSqlFiles } = require('./files-sql.cjs');

@@ -16,8 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const constants = require('generator-jhipster/generators/generator-constants');
 const { mergeSections, addSectionsCondition } = require('generator-jhipster/generators/utils');
+const constants = require('../jhipster-constants.cjs');
 
 const DOCKER_DIR = constants.DOCKER_DIR;
 // const SERVER_MAIN_SRC_DIR = constants.SERVER_MAIN_SRC_DIR;

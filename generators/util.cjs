@@ -1,5 +1,6 @@
-const constants = require('generator-jhipster/generators/generator-constants');
-const { SERVER_MAIN_SRC_DIR, SERVER_TEST_SRC_DIR } = require('generator-jhipster/generators/generator-constants');
+const constants = require('./jhipster-constants.cjs');
+
+const { SERVER_MAIN_SRC_DIR, SERVER_TEST_SRC_DIR } = constants;
 
 const SERVER_MAIN_SRC_KOTLIN_DIR = `${constants.MAIN_DIR}kotlin/`;
 const SERVER_TEST_SRC_KOTLIN_DIR = `${constants.TEST_DIR}kotlin/`;

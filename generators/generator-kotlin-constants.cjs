@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const jhipsterConstants = require('./jhipster-constants.cjs');
 
 const DETEKT_VERSION = '1.21.0';
 const KOTLIN_VERSION = '1.6.21';
@@ -36,7 +37,7 @@ const constants = {
     MAVEN_ANTRUN_VERSION,
     DETEKT_CONFIG_FILE,
     MAPSTRUCT_VERSION,
-    jhipsterConstants: require('generator-jhipster/generators/generator-constants'),
+    jhipsterConstants,
 };
 
 module.exports = constants;
