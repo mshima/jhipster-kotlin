@@ -2,7 +2,6 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { transform, passthrough } from '@yeoman/transform';
 import BaseApplicationGenerator from 'generator-jhipster/generators/spring-boot';
-import { postPrepareEntity } from 'generator-jhipster/generators/liquibase/support';
 import { createNeedleCallback, upperFirstCamelCase } from 'generator-jhipster/generators/base/support';
 import { prepareSqlApplicationProperties } from 'generator-jhipster/generators/spring-data-relational/support';
 
@@ -290,6 +289,14 @@ export default class extends BaseApplicationGenerator {
 
     get [BaseApplicationGenerator.POST_WRITING]() {
         return this.asPostWritingTaskGroup({
+            removeScripts({ application }) {
+                if (application.applicationTypeGateway || application.gatewayServerPort) {
+                    // Readiness port is not correctly exposed in gateways
+                    // Don't wait for readiness state
+                    const scriptsStorage = this.packageJson.createStorage('scripts');
+                    scriptsStorage.delete('pree2e:headless');
+                }
+            },
             async customizeGradle({ application, source }) {
                 if (application.buildToolGradle) {
                     // JHipster 8 have needles fixed
