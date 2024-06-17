@@ -47,7 +47,7 @@ export default class extends BaseApplicationGenerator {
     async beforeQueue() {
         await this.dependsOnJHipster('server');
         await this.dependsOnJHipster('jhipster:java:build-tool', {
-            // We don't want new gradle files to be written before templates migration
+            // We want to use v7 liquibase templates and keep pom.xml unsorted for easier migration
             generatorOptions: { skipPriorities: ['writing', 'postWriting'], sortMavenPom: false },
         });
     }
@@ -66,7 +66,7 @@ export default class extends BaseApplicationGenerator {
                     this.jhipsterConfigWithDefaults.databaseMigration === 'liquibase'
                 ) {
                     await this.composeWithJHipster('liquibase', {
-                        // We don't want base liquibase files to be written before templates migration
+                        // We want to use v7 liquibase templates
                         generatorOptions: { skipPriorities: ['writing', 'postWriting'] },
                     });
                 }
@@ -79,7 +79,9 @@ export default class extends BaseApplicationGenerator {
             ...super.loading,
             async applyKotlinDefaults({ application }) {
                 Object.assign(application, {
+                    // We don't want to use to write any Java files
                     backendTypeJavaAny: false,
+                    // syncUserWithIdp disabled is not supported by kotlin blueprint
                     syncUserWithIdp: application.authenticationType === 'oauth2',
                 });
             },
@@ -91,8 +93,8 @@ export default class extends BaseApplicationGenerator {
                     ]),
                 );
 
+                // Add variables required by V7 templates
                 applicationDefaults({
-                    prodDatabaseType: application.databaseType,
                     ...dockerContainersVersions,
                     testDir: application.packageFolder,
                     javaDir: application.packageFolder,
@@ -138,6 +140,7 @@ export default class extends BaseApplicationGenerator {
             async preparingTemplateTask({ applicationDefaults }) {
                 applicationDefaults({
                     __override__: true,
+                    // Enabled by default if backendTypeJavaAny, apply for Kotlin as well
                     useNpmWrapper: ({ clientFrameworkAny }) => clientFrameworkAny,
                 });
             },
@@ -146,6 +149,9 @@ export default class extends BaseApplicationGenerator {
 
                 applicationDefaults({
                     __override__: true,
+                    // V7 templates expects prodDatabaseType to be set for non SQL databases
+                    prodDatabaseType: application.databaseType,
+                    // V7 templates expects false instead of 'no'
                     searchEngine: ({ searchEngine }) => (searchEngine === 'no' ? false : searchEngine),
                 });
             },
@@ -157,7 +163,7 @@ export default class extends BaseApplicationGenerator {
             ...super.loadingEntities,
             migration({ application }) {
                 if (application.authority) {
-                    // V8 rest api is not compatible with current api.
+                    // V8 rest api is not compatible with current authority api.
                     application.authority.skipClient = true;
                 }
             },
@@ -168,7 +174,10 @@ export default class extends BaseApplicationGenerator {
         return this.asPostPreparingEachEntityTaskGroup({
             ...super.postPreparingEachEntity,
             migration({ application, entity }) {
-                postPrepareEntity({ application, entity });
+                // V7 templates requires liquibase preparation
+                // postPrepareEntity({ application, entity });
+
+                // V7 templates expects false instead of 'no'
                 entity.searchEngine = entity.searchEngine && entity.searchEngine !== 'no';
             },
         });
