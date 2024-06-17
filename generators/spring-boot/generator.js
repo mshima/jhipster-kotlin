@@ -146,7 +146,7 @@ export default class extends BaseApplicationGenerator {
 
                 applicationDefaults({
                     __override__: true,
-                    searchEngine: ({ searchEngine }) => searchEngine && searchEngine !== 'no',
+                    searchEngine: ({ searchEngine }) => (searchEngine === 'no' ? false : searchEngine),
                 });
             },
         });
