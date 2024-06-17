@@ -1,0 +1,18 @@
+@ChangelogDate(20200804035352)
+entity MapstructExpressionTest {
+  id Long
+
+  name String
+
+  @MapstructExpression("java(s.getName())")
+  value String
+}
+
+@ChangelogDate(20200804035353)
+entity MapstructExpressionRelatedFieldTest
+
+relationship OneToMany {
+  MapstructExpressionTest to MapstructExpressionRelatedFieldTest{parent(value)}
+}
+
+dto MapstructExpressionTest,MapstructExpressionRelatedFieldTest with mapstruct

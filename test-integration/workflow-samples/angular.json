@@ -10,7 +10,7 @@
             "name": "ngx-default-additional",
             "entity": "none",
             "app-sample": "ngx-default",
-            "jdl-entity": "*"
+            "jdl-entity": "custom-domain,custom-id,entities"
         },
         {
             "name": "ngx-mongodb-kafka-cucumber",

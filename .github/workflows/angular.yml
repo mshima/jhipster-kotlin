@@ -108,12 +108,8 @@ jobs:
             #----------------------------------------------------------------------
             # Install JHipster and generate project+entities
             #----------------------------------------------------------------------
-            - name: 'GENERATION: config'
-              run: $KHI_SCRIPTS/11-generate-config.sh
-            - name: 'GENERATION: project'
-              run: $KHI_SCRIPTS/12-generate-project.sh --skip-jhipster-dependencies --skip-install --skip-ktlint-format ${{ matrix.extra-args }} ${{ matrix.new-extra-args }}
-            - name: 'GENERATION: jhipster info'
-              run: $KHI_SCRIPTS/14-jhipster-info.sh
+            - run: cli.cjs generate-sample --skip-jhipster-dependencies --skip-install --skip-ktlint-format ${{ matrix.extra-args }} ${{ matrix.new-extra-args }}
+            - run: cli.cjs info
             #----------------------------------------------------------------------
             # Detect changes against base commit
             #----------------------------------------------------------------------
@@ -155,10 +151,9 @@ jobs:
               run: npm run ci:e2e:prepare
               timeout-minutes: 5
             - run: npm run preci:e2e:server:start --if-present
-            - name: 'E2E: Run'
+            - run: npm run ci:e2e:run --if-present
               id: e2e
               if: steps.compare.outputs.equals != 'true'
-              run: npm run ci:e2e:run --if-present
               timeout-minutes: 20
             - name: 'TESTS: frontend'
               if: steps.compare.outputs.equals != 'true' && matrix.skip-frontend-tests != 1 && needs.build-matrix.outputs.client != 'false'

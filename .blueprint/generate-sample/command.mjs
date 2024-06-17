@@ -16,9 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { readdir } from 'node:fs/promises';
-import { GENERATOR_APP } from 'generator-jhipster/generators';
 import { getSamples } from './get-samples.mjs';
+import { entitiesByType } from './support/index.mjs';
+import { existsSync, readdirSync } from 'node:fs';
+
+const updateSampleName = sample =>
+    sample.replace('ngx', 'ng').replace('ms-ng-eureka-oauth2-mongodb-caffeine', 'ms-ng-oauth2-mongodb-caffeine');
 
 /**
  * @type {import('generator-jhipster').JHipsterCommandDefinition}
@@ -32,7 +35,7 @@ const command = {
     configs: {
         sampleName: {
             prompt: gen => ({
-                when: !gen.all,
+                when: !gen.all && existsSync(gen.templatePath(gen.samplesFolder)),
                 type: 'list',
                 message: 'which sample do you want to generate?',
                 choices: async () => getSamples(gen.templatePath(gen.samplesFolder)),
@@ -44,6 +47,11 @@ const command = {
             cli: {
                 type: Boolean,
             },
+            configure: gen => {
+                if (gen.all) {
+                    gen.generatorArgs = readdirSync(this.templatePath('samples'));
+                }
+            },
             scope: 'generator',
         },
         samplesFolder: {
@@ -54,9 +62,82 @@ const command = {
             default: 'samples',
             scope: 'generator',
         },
+        entrypointGenerator: {
+            description: 'The generator to use as the entrypoint',
+            cli: {
+                type: String,
+            },
+            default: 'jdl',
+            scope: 'generator',
+        },
+        appSample: {
+            description: 'Sample name to generate',
+            cli: {
+                type: String,
+                env: 'JHI_APP',
+            },
+            configure: gen => {
+                if (gen.appSample && gen.appSample !== 'jdl') {
+                    gen.samplesFolder = `json-samples/${updateSampleName(gen.appSample)}`;
+                    gen.entrypointGenerator = 'app';
+                }
+            },
+            scope: 'generator',
+        },
+        jdlSamples: {
+            description: 'Generate JDL samples',
+            cli: {
+                type: String,
+                env: 'JHI_JDL_APP',
+            },
+            configure: gen => {
+                if (gen.jdlSamples) {
+                    const [app, ...entities] = gen.jdlSamples.split(',');
+                    gen.samplesFolder = `jdl-samples/${updateSampleName(app)}`;
+                    gen.generatorArgs = '*.jdl';
+                    if (entities && entities.length > 0) {
+                        gen.supportingSamples.push(...entities.map(entity => `${entity}.jdl`));
+                    }
+                }
+            },
+            scope: 'generator',
+        },
+        entityType: {
+            description: 'Entity type to generate',
+            cli: {
+                env: 'JHI_ENTITY',
+                type: String,
+            },
+            configure: gen => {
+                const { entityType } = gen;
+                if (entityType && entityType !== 'none') {
+                    gen.supportingSamples.push(...entitiesByType[entityType].map(entity => `.jhipster/${entity}.json`));
+                }
+            },
+            choices: [...Object.keys(entitiesByType), 'none'],
+            scope: 'generator',
+        },
+        jdlEntities: {
+            description: 'Generate JDL entities samples',
+            cli: {
+                type: String,
+                env: 'JHI_JDL_ENTITY',
+            },
+            configure: gen => {
+                if (gen.jdlEntities) {
+                    const entities = gen.jdlEntities.split(',');
+                    gen.generatorArgs = '*.jdl';
+                    gen.entrypointGenerator = 'jdl';
+                    if (entities && entities.length > 0) {
+                        gen.supportingSamples.push(...entities.map(entity => `${entity}.jdl`));
+                    }
+                }
+            },
+            scope: 'generator',
+        },
     },
     options: {},
-    import: [GENERATOR_APP],
+    import: ['app', 'workspaces'],
 };
 
 export default command;
