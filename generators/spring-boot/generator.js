@@ -48,7 +48,7 @@ export default class extends BaseApplicationGenerator {
         await this.dependsOnJHipster('server');
         await this.dependsOnJHipster('jhipster:java:build-tool', {
             // We don't want new gradle files to be written before templates migration
-            generatorOptions: { skipPriorities: ['writing', 'postWriting'] },
+            generatorOptions: { skipPriorities: ['writing', 'postWriting'], sortMavenPom: false },
         });
     }
 
@@ -114,7 +114,6 @@ export default class extends BaseApplicationGenerator {
                 });
 
                 Object.assign(application, {
-                    sortMavenPom: false,
                     // Required by renameTo
                     upperFirstCamelCase,
                     // Required by renameTo
@@ -627,6 +626,8 @@ export default class extends BaseApplicationGenerator {
                             },
                         ],
                     });
+
+                    maven.pomStorage.save(false);
                 }
             },
         });
