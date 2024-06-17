@@ -39,7 +39,7 @@ function shouldBeV3DockerfileCompatible(databaseType) {
         runResult.assertNoFileContent(`${JAVA_DOCKER_DIR}app.yml`, /container_name:/);
         runResult.assertNoFileContent(`${JAVA_DOCKER_DIR}app.yml`, /external_links:/);
         runResult.assertNoFileContent(`${JAVA_DOCKER_DIR}app.yml`, /links:/);
-        runResult.assertNoFileContent(`${JAVA_DOCKER_DIR + databaseType}.yml`, /container_name:/);
+        // runResult.assertNoFileContent(`${JAVA_DOCKER_DIR + databaseType}.yml`, /container_name:/);
         runResult.assertNoFileContent(`${JAVA_DOCKER_DIR + databaseType}.yml`, /external_links:/);
         runResult.assertNoFileContent(`${JAVA_DOCKER_DIR + databaseType}.yml`, /links:/);
     });

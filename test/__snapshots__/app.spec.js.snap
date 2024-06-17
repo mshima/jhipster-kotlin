@@ -122,6 +122,9 @@ exports[`JHipster generator for App generator > App with skip client > Gradle > 
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -327,6 +330,9 @@ exports[`JHipster generator for App generator > App with skip client > Gradle > 
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -571,6 +577,9 @@ exports[`JHipster generator for App generator > App with skip client > Maven > c
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -770,6 +779,9 @@ exports[`JHipster generator for App generator > App with skip client > Maven > c
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -1017,6 +1029,9 @@ exports[`JHipster generator for App generator > Application with DB option > mar
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -1222,6 +1237,9 @@ exports[`JHipster generator for App generator > Application with DB option > mar
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -1484,6 +1502,9 @@ exports[`JHipster generator for App generator > Application with DB option > mon
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -1668,6 +1689,9 @@ exports[`JHipster generator for App generator > Application with DB option > mon
     "stateCleared": "modified",
   },
   "src/main/resources/config/application.yml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -1897,6 +1921,12 @@ exports[`JHipster generator for App generator > Application with other options >
   "src/main/docker/realm-config/jhipster-realm.json": {
     "stateCleared": "modified",
   },
+  "src/main/docker/realm-config/keycloak-health-check.sh": {
+    "stateCleared": "modified",
+  },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -2027,6 +2057,9 @@ exports[`JHipster generator for App generator > Application with other options >
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/data/user.csv": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -2197,6 +2230,9 @@ exports[`JHipster generator for App generator > Auth options > HTTP session auth
     "stateCleared": "modified",
   },
   "src/main/docker/prometheus/prometheus.yml": {
+    "stateCleared": "modified",
+  },
+  "src/main/docker/services.yml": {
     "stateCleared": "modified",
   },
   "src/main/docker/sonar.yml": {
@@ -2395,6 +2431,9 @@ exports[`JHipster generator for App generator > Auth options > HTTP session auth
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -2630,6 +2669,9 @@ exports[`JHipster generator for App generator > Auth options > JWT authenticatio
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -2835,6 +2877,9 @@ exports[`JHipster generator for App generator > Auth options > JWT authenticatio
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -3109,6 +3154,9 @@ exports[`JHipster generator for App generator > Default configuration with > Gra
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -3314,6 +3362,9 @@ exports[`JHipster generator for App generator > Default configuration with > Gra
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -3591,6 +3642,9 @@ exports[`JHipster generator for App generator > Default configuration with > Gra
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -3796,6 +3850,9 @@ exports[`JHipster generator for App generator > Default configuration with > Gra
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -4052,6 +4109,9 @@ exports[`JHipster generator for App generator > Default configuration with > Mav
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -4257,6 +4317,9 @@ exports[`JHipster generator for App generator > Default configuration with > Mav
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -4510,6 +4573,9 @@ exports[`JHipster generator for App generator > Default configuration with > ang
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -4715,6 +4781,9 @@ exports[`JHipster generator for App generator > Default configuration with > ang
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -4965,6 +5034,9 @@ exports[`JHipster generator for App generator > Default configuration with > rea
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -5170,6 +5242,9 @@ exports[`JHipster generator for App generator > Default configuration with > rea
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
@@ -5420,6 +5495,9 @@ exports[`JHipster generator for App generator > Testing options > Cucumber tests
   "src/main/docker/prometheus/prometheus.yml": {
     "stateCleared": "modified",
   },
+  "src/main/docker/services.yml": {
+    "stateCleared": "modified",
+  },
   "src/main/docker/sonar.yml": {
     "stateCleared": "modified",
   },
@@ -5625,6 +5703,9 @@ exports[`JHipster generator for App generator > Testing options > Cucumber tests
     "stateCleared": "modified",
   },
   "src/main/resources/config/liquibase/master.xml": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/tls/keystore.p12": {
     "stateCleared": "modified",
   },
   "src/main/resources/i18n/messages.properties": {
