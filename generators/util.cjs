@@ -11,10 +11,11 @@ const getPath = pathName => {
     return pathName;
 };
 
-const convertToKotlinFile = file => file
-  .replace('.java', '.kt')
-  .replace(SERVER_MAIN_SRC_DIR, SERVER_MAIN_SRC_KOTLIN_DIR)
-  .replace(SERVER_TEST_SRC_DIR, SERVER_TEST_SRC_KOTLIN_DIR);
+const convertToKotlinFile = file =>
+    file
+        .replace('.java', '.kt')
+        .replace(SERVER_MAIN_SRC_DIR, SERVER_MAIN_SRC_KOTLIN_DIR)
+        .replace(SERVER_TEST_SRC_DIR, SERVER_TEST_SRC_KOTLIN_DIR);
 
 const makeKotlinServerFiles = function (files) {
     const keys = Object.keys(files);
@@ -26,9 +27,9 @@ const makeKotlinServerFiles = function (files) {
             path: getPath(file.path),
             templates: file.templates
                 .filter(template => {
-                  const { file = template } = template;
-                  if (typeof file === 'string' && (file.includes('package-info') || file.includes('src/main/docker'))) return false;
-                  return true;
+                    const { file = template } = template;
+                    if (typeof file === 'string' && (file.includes('package-info') || file.includes('src/main/docker'))) return false;
+                    return true;
                 })
                 .map(template => {
                     if (template.file) {
