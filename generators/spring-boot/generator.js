@@ -1,7 +1,7 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { transform, passthrough } from '@yeoman/transform';
-import BaseApplicationGenerator from 'generator-jhipster/generators/base-application';
+import BaseApplicationGenerator from 'generator-jhipster/generators/spring-boot';
 import { postPrepareEntity } from 'generator-jhipster/generators/liquibase/support';
 import { createNeedleCallback, upperFirstCamelCase } from 'generator-jhipster/generators/base/support';
 import { prepareSqlApplicationProperties } from 'generator-jhipster/generators/spring-data-relational/support';
@@ -31,49 +31,24 @@ const {
     ELASTICSEARCH_VERSION,
 } = jhipsterConstants;
 
-const WAIT_TIMEOUT = 3 * 60000;
 const jhipster7TemplatesPackage = dirname(fileURLToPath(import.meta.resolve('jhipster-7-templates/package.json')));
 
 export default class extends BaseApplicationGenerator {
     constructor(args, options, features) {
-        super(args, options, { ...features, jhipster7Migration: true });
+        super(args, options, { ...features, jhipster7Migration: true, checkBlueprint: true, inheritTasks: true });
 
-        this.jhipsterTemplatesFolders.push(
+        this.jhipsterTemplatesFolders = [
+            this.templatePath(),
             join(jhipster7TemplatesPackage, 'generators/server/templates/'),
             join(jhipster7TemplatesPackage, 'generators/entity-server/templates/'),
-        );
+        ];
     }
 
     async beforeQueue() {
-        await this.dependsOnJHipster('jhipster:bootstrap');
         await this.dependsOnJHipster('server');
         await this.dependsOnJHipster('jhipster:java:build-tool', {
             // We don't want new gradle files to be written before templates migration
             generatorOptions: { skipPriorities: ['writing', 'postWriting'] },
-        });
-    }
-
-    get [BaseApplicationGenerator.INITIALIZING]() {
-        return this.asInitializingTaskGroup({
-            async initializingTemplateTask() {
-                await this.parseCurrentJHipsterCommand();
-            },
-        });
-    }
-
-    get [BaseApplicationGenerator.PROMPTING]() {
-        return this.asPromptingTaskGroup({
-            async promptingTemplateTask() {
-                await this.promptCurrentJHipsterCommand();
-            },
-        });
-    }
-
-    get [BaseApplicationGenerator.CONFIGURING]() {
-        return this.asConfiguringTaskGroup({
-            async configuringTemplateTask() {
-                await this.configureCurrentJHipsterCommandConfig();
-            },
         });
     }
 
@@ -99,23 +74,9 @@ export default class extends BaseApplicationGenerator {
         });
     }
 
-    get [BaseApplicationGenerator.COMPOSING_COMPONENT]() {
-        return this.asComposingComponentTaskGroup({
-            async composeLanguages() {
-                if (this.jhipsterConfigWithDefaults.enableTranslation) {
-                    const languages = await this.composeWithJHipster('languages');
-                    // Find a better way to write translation files.
-                    languages.writeJavaLanguageFiles = true;
-                }
-            },
-        });
-    }
-
     get [BaseApplicationGenerator.LOADING]() {
         return this.asLoadingTaskGroup({
-            async loadingTemplateTask({ application }) {
-                await this.loadCurrentJHipsterCommandConfig(application);
-            },
+            ...super.loading,
             async applyKotlinDefaults({ application }) {
                 Object.assign(application, {
                     backendTypeJavaAny: false,
@@ -174,7 +135,8 @@ export default class extends BaseApplicationGenerator {
 
     get [BaseApplicationGenerator.PREPARING]() {
         return this.asPreparingTaskGroup({
-            async preparingTemplateTask({ application, applicationDefaults }) {
+            ...super.preparing,
+            async preparingTemplateTask({ applicationDefaults }) {
                 applicationDefaults({
                     __override__: true,
                     useNpmWrapper: ({ clientFrameworkAny }) => clientFrameworkAny,
@@ -193,6 +155,7 @@ export default class extends BaseApplicationGenerator {
 
     get [BaseApplicationGenerator.POST_PREPARING_EACH_ENTITY]() {
         return this.asPostPreparingEachEntityTaskGroup({
+            ...super.postPreparingEachEntity,
             migration({ application, entity }) {
                 postPrepareEntity({ application, entity });
                 entity.searchEngine = entity.searchEngine && entity.searchEngine !== 'no';
@@ -202,6 +165,7 @@ export default class extends BaseApplicationGenerator {
 
     get [BaseApplicationGenerator.DEFAULT]() {
         return this.asDefaultTaskGroup({
+            ...super.default,
             async defaultTemplateTask({ application }) {
                 this.queueTransformStream(
                     {
@@ -238,7 +202,10 @@ export default class extends BaseApplicationGenerator {
     }
 
     get [BaseApplicationGenerator.WRITING]() {
+        const { resetFakeDataSeed, generateKeyStore } = super.writing;
         return this.asWritingTaskGroup({
+            resetFakeDataSeed,
+            generateKeyStore,
             async writingTemplateTask({ application }) {
                 /*
                 if (application.user && !application.user.liquibaseFakeData) {
@@ -299,8 +266,6 @@ export default class extends BaseApplicationGenerator {
 
     get [BaseApplicationGenerator.POST_WRITING]() {
         return this.asPostWritingTaskGroup({
-            async postWritingTemplateTask() {},
-
             async customizeGradle({ application, source }) {
                 if (application.buildToolGradle) {
                     // JHipster 8 have needles fixed
@@ -652,22 +617,6 @@ export default class extends BaseApplicationGenerator {
                     });
                 }
             },
-        });
-    }
-
-    get [BaseApplicationGenerator.POST_WRITING_ENTITIES]() {
-        return this.asPostWritingEntitiesTaskGroup({});
-    }
-
-    get [BaseApplicationGenerator.INSTALL]() {
-        return this.asInstallTaskGroup({
-            async installTemplateTask() {},
-        });
-    }
-
-    get [BaseApplicationGenerator.END]() {
-        return this.asEndTaskGroup({
-            async endTemplateTask() {},
         });
     }
 }

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`JHipster kotlin generator > exported files > should match snapshot 1`] = `
+exports[`JHipster spring-boot generator > exported files > should match snapshot 1`] = `
 {
   "docker": [
     {
