@@ -66,9 +66,13 @@ export default class extends BaseApplicationGenerator {
                     this.jhipsterConfigWithDefaults.databaseMigration === 'liquibase'
                 ) {
                     await this.composeWithJHipster('liquibase', {
-                        // We want to use v7 liquibase templates
+                        // We want to use v7 liquibase templates.
                         generatorOptions: { skipPriorities: ['writing', 'postWriting'] },
                     });
+                }
+                if (this.jhipsterConfigWithDefaults.applicationType === 'gateway') {
+                    // Use gateway package.json scripts.
+                    await this.composeWithJHipster('jhipster:spring-cloud:gateway');
                 }
             },
         });
