@@ -117,9 +117,6 @@ jobs:
             #----------------------------------------------------------------------
             # Detect changes against base commit
             #----------------------------------------------------------------------
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 16
             - name: 'MERGE: generate base'
               continue-on-error: true
               id: base-app
@@ -128,7 +125,7 @@ jobs:
                   !contains(github.event.pull_request.labels.*.name, 'pr: disable-compare')
               uses: ./jhipster-kotlin/.github/actions/compare-base
               with:
-                  extra-args: '--skip-jhipster-dependencies --skip-ktlint-format --with-entities ${{ matrix.extra-args }}'
+                  extra-args: '--skip-jhipster-dependencies --skip-ktlint-format ${{ matrix.extra-args }}'
             - name: 'MERGE: compare changes'
               continue-on-error: true
               id: compare
@@ -136,9 +133,6 @@ jobs:
               uses: ./jhipster-kotlin/.github/actions/compare
               with:
                   application-path: ${{ steps.base-app.outputs.application-path }}
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 20
             #----------------------------------------------------------------------
             # Launch tests
             #----------------------------------------------------------------------
