@@ -150,7 +150,7 @@ export default class extends BaseApplicationGenerator {
                 applicationDefaults({
                     __override__: true,
                     // V7 templates expects prodDatabaseType to be set for non SQL databases
-                    prodDatabaseType: application.databaseType,
+                    prodDatabaseType: ({ prodDatabaseType, databaseType }) => prodDatabaseType ?? databaseType,
                     // V7 templates expects false instead of 'no'
                     searchEngine: ({ searchEngine }) => (searchEngine === 'no' ? false : searchEngine),
                 });
