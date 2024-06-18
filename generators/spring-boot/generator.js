@@ -176,7 +176,7 @@ export default class extends BaseApplicationGenerator {
     get [BaseApplicationGenerator.POST_PREPARING_EACH_ENTITY]() {
         return this.asPostPreparingEachEntityTaskGroup({
             ...super.postPreparingEachEntity,
-            migration({ application, entity }) {
+            migration({ entity }) {
                 // V7 templates requires liquibase preparation
                 // postPrepareEntity({ application, entity });
 

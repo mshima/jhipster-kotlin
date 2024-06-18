@@ -40,7 +40,7 @@ runs:
               cd "${{ github.workspace }}/jhipster-kotlin"
               git restore -s @~1 .
               npm install
-              git checkout .github
+              git checkout .github test-integration
           shell: bash
         - name: 'MERGE: merge base config'
           id: base-config

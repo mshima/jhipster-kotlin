@@ -189,7 +189,18 @@ fi
 # Generate jdl entities
 #-------------------------------------------------------------------------------
 if [[ "$JHI_JDL_ENTITY" != "" && "$JHI_JDL_ENTITY" != "none" ]]; then
-    cli.cjs --no-insight jdl "$JHI_SAMPLES"/jdl-entities/$JHI_JDL_ENTITY.jdl --json-only
+    IFS=','
+    for i in `echo "$JHI_JDL_ENTITY"`
+    do
+        if [[ -d "$JHI_SAMPLES/jdl-entities/$i" ]]; then
+            cli.cjs --no-insight jdl "$JHI_SAMPLES"/jdl-entities/$i --json-only
+
+        elif [[ -f "$JHI_SAMPLES/jdl-entities/$i.jdl" ]]; then
+            cp -f "$JHI_SAMPLES/jdl-entities/$i.jdl" "$KHI_FOLDER_APP"/
+            cli.cjs --no-insight jdl "$JHI_SAMPLES"/jdl-entities/$i.jdl --json-only
+
+        fi
+    done
 fi
 
 #-------------------------------------------------------------------------------
