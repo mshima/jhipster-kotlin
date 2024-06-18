@@ -31,8 +31,9 @@ application {
     jwtSecretKey "ZjY4MTM4YjI5YzMwZjhjYjI2OTNkNTRjMWQ5Y2Q0Y2YwOWNmZTE2NzRmYzU3NTMwM2NjOTE3MTllOTM3MWRkMzcyYTljMjVmNmQ0Y2MxOTUzODc0MDhhMTlkMDIxMzI2YzQzZDM2ZDE3MmQ3NjVkODk3OTVmYzljYTQyZDNmMTQ="
     messageBroker kafka
     packageName com.okta.developer.gateway
-    reactive false
-    serviceDiscoveryType no
+    // reactive false
+    // serviceDiscoveryType no
+    serviceDiscoveryType consul
     testFrameworks [cypress, cucumber, gatling]
     routes ["blog:blog:8081", "store:store:8082", "notification:notification:8083"]
   }
@@ -53,7 +54,8 @@ application {
     packageName com.okta.developer.blog
     reactive true
     serverPort 8081
-    serviceDiscoveryType no
+    // serviceDiscoveryType no
+    serviceDiscoveryType consul
     testFrameworks [cucumber, gatling]
   }
   entities Blog, Post, Tag
@@ -75,7 +77,8 @@ application {
     messageBroker kafka
     packageName com.okta.developer.store
     serverPort 8082
-    serviceDiscoveryType no
+    // serviceDiscoveryType no
+    serviceDiscoveryType consul
     testFrameworks [cucumber, gatling]
   }
   entities Product
@@ -97,7 +100,8 @@ application {
     packageName com.okta.developer.notification
     reactive true
     serverPort 8083
-    serviceDiscoveryType no
+    // serviceDiscoveryType no
+    serviceDiscoveryType consul
     testFrameworks [cucumber, gatling]
   }
   entities Notification
@@ -164,7 +168,8 @@ deployment {
   appsFolders [gateway, store, blog, notification]
   dockerRepositoryName "hipsterslabs"
   monitoring no
-  serviceDiscoveryType no
+  // serviceDiscoveryType no
+  serviceDiscoveryType consul
 }
 
 deployment {
@@ -172,5 +177,6 @@ deployment {
   appsFolders [gateway, store, blog, notification]
   dockerRepositoryName "hipsterslabs"
   monitoring no
-  serviceDiscoveryType no
+  // serviceDiscoveryType no
+  serviceDiscoveryType consul
 }
