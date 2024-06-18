@@ -35,7 +35,7 @@ application {
     microfrontends [blog, notification]
   }
   // Add UserData
-  entities UserData, Product
+  entities Product
 }
 
 /* microfrontend, imperative, maven */
