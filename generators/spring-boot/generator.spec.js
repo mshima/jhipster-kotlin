@@ -13,7 +13,8 @@ describe('SubGenerator kotlin of kotlin JHipster blueprint', () => {
                     blueprints: 'kotlin',
                 })
                 .withJHipsterLookup()
-                .withParentBlueprintLookup();
+                .withParentBlueprintLookup()
+                .withMockedGenerators(['jhipster-kotlin:ktlint']);
         });
 
         it('should succeed', () => {
