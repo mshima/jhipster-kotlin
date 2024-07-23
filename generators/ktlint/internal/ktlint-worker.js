@@ -1,28 +1,20 @@
 import { execa } from 'execa';
+import { getKtlintExecutable } from './ktlint-executable.js';
 
-export default async ({ ktlintExecutable, fileContents, cwd }) => {
-    let result;
-    let info;
+export default async ({ fileContents, cwd }) => {
     try {
-        const { stdout } = await execa(ktlintExecutable, ['--log-level=none', '--format', '--stdin'], {
+        const { stdout } = await execa(getKtlintExecutable(), ['--log-level=none', '--format', '--stdin'], {
             input: fileContents,
             stdio: 'pipe',
             shell: false,
             stripFinalNewline: false,
             cwd,
         });
-        result = stdout;
+        return { result: stdout };
     } catch (error) {
-        if (error.stdout) {
-            result = error.stdout;
-        } else {
-            console.log(error);
-        }
-        if (error.stderr) {
-            info = error.stderr;
-        } else {
+        if (!error.stdout || !error.stderr) {
             return { error: `${error}` };
         }
+        return { result: error.stdout, info: error.stderr };
     }
-    return { result, info };
 };
