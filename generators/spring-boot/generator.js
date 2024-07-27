@@ -243,6 +243,7 @@ export default class extends BaseApplicationGenerator {
 
                 Object.assign(application.javaDependencies, {
                     'spring-boot': '2.7.3',
+                    'spring-boot-dependencies': '2.7.3',
                 });
 
                 applicationDefaults({
@@ -406,10 +407,11 @@ export default class extends BaseApplicationGenerator {
             ...super.postWriting,
             addSpringdoc: undefined,
             customizeGradle({ application }) {
+                this.editFile(application.buildToolGradle ? 'build.gradle' : 'pom.xml', content =>
+                    content.replace('micrometer-registry-prometheus-simpleclient', 'micrometer-registry-prometheus'),
+                );
+
                 if (application.buildToolGradle) {
-                    this.editFile('build.gradle', content =>
-                        content.replace('\n    implementation "io.micrometer:micrometer-registry-prometheus-simpleclient"', ''),
-                    );
                     this.editFile('gradle/profile_dev.gradle', content =>
                         content.replace(
                             "\n        excludes = ['time']",
