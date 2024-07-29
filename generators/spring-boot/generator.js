@@ -242,7 +242,7 @@ export default class extends BaseApplicationGenerator {
 
                 applicationDefaults({
                     __override__: true,
-                    gradleVersion: '7.6.4',
+                    gradleVersion: '8.9',
                 });
 
                 Object.assign(application.javaDependencies, {
