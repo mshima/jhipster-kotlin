@@ -3680,6 +3680,12 @@ exports[`Matrix test of SubGenerator kotlin of kotlin JHipster blueprint > gatew
   "src/main/resources/config/couchmove/changelog/V0.1__initial_setup/user/user.json": {
     "stateCleared": "modified",
   },
+  "src/main/resources/config/couchmove/changelog/V0.2__create_indexes.n1ql": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0__create_collections.n1ql": {
+    "stateCleared": "modified",
+  },
   "src/main/resources/config/couchmove/changelog/V20220129000100__simple.n1ql": {
     "stateCleared": "modified",
   },
@@ -11731,6 +11737,12 @@ exports[`Matrix test of SubGenerator kotlin of kotlin JHipster blueprint > micro
   "src/main/resources/config/couchmove/changelog/V0.1__initial_setup/user/user.json": {
     "stateCleared": "modified",
   },
+  "src/main/resources/config/couchmove/changelog/V0.2__create_indexes.n1ql": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0__create_collections.n1ql": {
+    "stateCleared": "modified",
+  },
   "src/main/resources/config/couchmove/changelog/V20220129000100__simple.n1ql": {
     "stateCleared": "modified",
   },
@@ -12235,6 +12247,12 @@ exports[`Matrix test of SubGenerator kotlin of kotlin JHipster blueprint > micro
     "stateCleared": "modified",
   },
   "src/main/resources/config/couchmove/changelog/V0.1__initial_setup/user/user.json": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0.2__create_indexes.n1ql": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0__create_collections.n1ql": {
     "stateCleared": "modified",
   },
   "src/main/resources/config/couchmove/changelog/V20220129000100__simple.n1ql": {
@@ -22700,6 +22718,12 @@ exports[`Matrix test of SubGenerator kotlin of kotlin JHipster blueprint > monol
   "src/main/resources/config/couchmove/changelog/V0.1__initial_setup/user/user.json": {
     "stateCleared": "modified",
   },
+  "src/main/resources/config/couchmove/changelog/V0.2__create_indexes.n1ql": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0__create_collections.n1ql": {
+    "stateCleared": "modified",
+  },
   "src/main/resources/config/couchmove/changelog/V20220129000100__simple.n1ql": {
     "stateCleared": "modified",
   },
@@ -23258,6 +23282,12 @@ exports[`Matrix test of SubGenerator kotlin of kotlin JHipster blueprint > monol
     "stateCleared": "modified",
   },
   "src/main/resources/config/couchmove/changelog/V0.1__initial_setup/user/user.json": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0.2__create_indexes.n1ql": {
+    "stateCleared": "modified",
+  },
+  "src/main/resources/config/couchmove/changelog/V0__create_collections.n1ql": {
     "stateCleared": "modified",
   },
   "src/main/resources/config/couchmove/changelog/V20220129000100__simple.n1ql": {
