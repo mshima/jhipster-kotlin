@@ -9,7 +9,6 @@ import { files as serverFiles } from 'jhipster-7-templates/esm/generators/server
 import { convertToKotlinFile } from '../kotlin/support/files.js';
 import migration from './migration.cjs';
 import { serverFiles as sqlFiles } from './files-sql.js';
-import { entityCouchbaseFiles } from './entity-files-couchbase.js';
 
 const { jhipsterConstants, jhipster7DockerContainers } = migration;
 const {
@@ -26,15 +25,11 @@ const {
     DOCKER_ELASTICSEARCH_CONTAINER,
     ELASTICSEARCH_VERSION,
     MAIN_DIR,
-    TEST_DIR,
 } = jhipsterConstants;
-
-const { couchbaseFiles } = migration;
 
 const jhipster7TemplatesPackage = dirname(fileURLToPath(import.meta.resolve('jhipster-7-templates/package.json')));
 
 const SERVER_MAIN_SRC_KOTLIN_DIR = `${MAIN_DIR}kotlin/`;
-const SERVER_TEST_SRC_KOTLIN_DIR = `${TEST_DIR}kotlin/`;
 
 const JAVA_VERSION = '11';
 
@@ -105,7 +100,6 @@ export default class extends BaseApplicationGenerator {
                             'jhipster:java:domain',
                             'jhipster:spring-cloud:gateway',
                             'jhipster:spring-data-cassandra',
-                            'jhipster:spring-data-couchbase',
                             'jhipster:spring-data-mongodb',
                             'jhipster:spring-data-neo4j',
                             'jhipster:spring-data-relational',
@@ -145,6 +139,10 @@ export default class extends BaseApplicationGenerator {
                             return undefined;
                         }
 
+                        if (sourceFile.includes('DatabaseConfiguration_couchbase', 'JHipsterCouchbaseRepository')) {
+                            return undefined;
+                        }
+
                         // Use liquibase templates from liquibase generator
                         if (sourceFile.includes('src/main/resources/liquibase')) {
                             return undefined;
@@ -164,9 +162,13 @@ export default class extends BaseApplicationGenerator {
                     */
 
                     if (sourceFile.includes('.java')) {
+                        const resolvedSourceFile =
+                            namespace === 'jhipster-kotlin:spring-boot'
+                                ? this.templatePath(convertToKotlinFile(sourceFile))
+                                : this.templatePath(namespace.split(':').pop(), convertToKotlinFile(sourceFile));
                         return {
                             ...file,
-                            resolvedSourceFile: this.templatePath(convertToKotlinFile(sourceFile)),
+                            resolvedSourceFile,
                             destinationFile: convertToKotlinFile(destinationFile),
                         };
                     }
@@ -311,41 +313,6 @@ export default class extends BaseApplicationGenerator {
                     context: application,
                 });
             },
-            cleanupCouchbaseFiles({ application }) {
-                if (!application.databaseTypeCouchbase) return;
-
-                if (this.isJhipsterVersionLessThan('7.1.1')) {
-                    this.removeFile(
-                        `${SERVER_MAIN_SRC_KOTLIN_DIR}${application.packageFolder}repository/CustomReactiveCouchbaseRepository.kt`,
-                    );
-                    this.removeFile(`${SERVER_TEST_SRC_KOTLIN_DIR}${application.packageFolder}config/DatabaseConfigurationIT.kt`);
-                    this.removeFile(`${SERVER_MAIN_SRC_KOTLIN_DIR}${application.packageFolder}repository/N1qlCouchbaseRepository.kt`);
-                    this.removeFile(
-                        `${SERVER_MAIN_SRC_KOTLIN_DIR}${application.packageFolder}repository/ReactiveN1qlCouchbaseRepository.kt`,
-                    );
-                    this.removeFile(`${SERVER_MAIN_SRC_KOTLIN_DIR}${application.packageFolder}repository/CustomN1qlCouchbaseRepository.kt`);
-                    this.removeFile(`${SERVER_MAIN_SRC_KOTLIN_DIR}${application.packageFolder}repository/CustomCouchbaseRepository.kt`);
-                    this.removeFile(`${SERVER_MAIN_SRC_KOTLIN_DIR}${application.packageFolder}repository/SearchCouchbaseRepository.kt`);
-                    this.removeFile(`${SERVER_TEST_SRC_KOTLIN_DIR}${application.packageFolder}repository/CustomCouchbaseRepositoryTest.kt`);
-                }
-            },
-            async writeCouchbaseFiles({ application }) {
-                if (!application.databaseTypeCouchbase) return;
-
-                await this.writeFiles({
-                    sections: couchbaseFiles,
-                    context: application,
-                    rootTemplatesPath: ['couchbase'],
-                    customizeTemplatePath: file =>
-                        file.sourceFile.includes('.java')
-                            ? {
-                                  ...file,
-                                  resolvedSourceFile: this.templatePath(`couchbase/${convertToKotlinFile(file.sourceFile)}`),
-                                  destinationFile: convertToKotlinFile(file.destinationFile),
-                              }
-                            : file,
-                });
-            },
         });
     }
 
@@ -358,14 +325,6 @@ export default class extends BaseApplicationGenerator {
                         context: { ...application, ...entity, entity },
                         rootTemplatesPath: application.reactive ? ['reactive', ''] : [''],
                     });
-
-                    if (application.databaseTypeCouchbase) {
-                        await this.writeFiles({
-                            sections: entityCouchbaseFiles,
-                            context: { ...application, ...entity, entity },
-                            rootTemplatesPath: 'couchbase',
-                        });
-                    }
                 }
             },
 
