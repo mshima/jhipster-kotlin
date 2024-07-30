@@ -1,4 +1,4 @@
-import { dirname, join } from 'path';
+import { basename, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import BaseApplicationGenerator from 'generator-jhipster/generators/spring-boot';
 import { prepareSqlApplicationProperties } from 'generator-jhipster/generators/spring-data-relational/support';
@@ -32,6 +32,16 @@ const jhipster7TemplatesPackage = dirname(fileURLToPath(import.meta.resolve('jhi
 const SERVER_MAIN_SRC_KOTLIN_DIR = `${MAIN_DIR}kotlin/`;
 
 const JAVA_VERSION = '11';
+
+const filesFromJHipster7TemplatesToIgnore = [
+    'CassandraKeyspaceIT.java',
+    'CassandraTestContainer.java',
+    'CassandraTestContainersSpringContextCustomizerFactory.java',
+    'DatabaseConfiguration_cassandra.java',
+    'EmbeddedCassandra.java',
+    'Entity.java.jhi.spring_data_cassandra',
+    'EntityRepository.java',
+];
 
 export default class extends BaseApplicationGenerator {
     constructor(args, options, features) {
@@ -93,17 +103,20 @@ export default class extends BaseApplicationGenerator {
                 });
 
                 application.customizeTemplatePaths.push(file => {
-                    const { resolvedSourceFile, sourceFile, destinationFile, namespace } = file;
+                    let { resolvedSourceFile, sourceFile, destinationFile, namespace } = file;
+                    const sourceBasename = basename(sourceFile);
+
                     if (
                         sourceFile.includes('package-info.java') ||
-                        [
+                        ['_persistClass_Asserts.java', '_persistClass_TestSamples.java'].includes(sourceBasename) ||
+                        ([
                             'jhipster:java:domain',
                             'jhipster:spring-cloud:gateway',
-                            'jhipster:spring-data-cassandra',
                             'jhipster:spring-data-mongodb',
                             'jhipster:spring-data-neo4j',
                             'jhipster:spring-data-relational',
-                        ].includes(namespace)
+                        ].includes(namespace) &&
+                            !sourceFile.includes('_entityPackage_'))
                     ) {
                         return undefined;
                     }
@@ -111,6 +124,29 @@ export default class extends BaseApplicationGenerator {
                     // Use master.xml from jhipster 7 templates
                     if (sourceFile.includes('master.xml')) {
                         return namespace === 'jhipster:liquibase' ? undefined : file;
+                    }
+
+                    // Uses a common template for all databases
+                    if (
+                        namespace !== 'jhipster:spring-data-couchbase' &&
+                        ['_entityClass_Repository.java', '_entityClass_Repository_reactive.java'].includes(sourceBasename)
+                    ) {
+                        namespace = 'jhipster-kotlin:spring-boot';
+                    }
+
+                    if (
+                        ['jhipster:spring-data-cassandra'].includes(namespace) &&
+                        ['CassandraTestContainersSpringContextCustomizerFactory.java'].includes(sourceBasename)
+                    ) {
+                        sourceFile = sourceFile.replace(
+                            'CassandraTestContainersSpringContextCustomizerFactory',
+                            'TestContainersSpringContextCustomizerFactory',
+                        );
+                        destinationFile = destinationFile.replace(
+                            'CassandraTestContainersSpringContextCustomizerFactory',
+                            'TestContainersSpringContextCustomizerFactory',
+                        );
+                        namespace = 'jhipster-kotlin:spring-boot';
                     }
 
                     if (namespace === 'jhipster-kotlin:spring-boot') {
@@ -162,7 +198,7 @@ export default class extends BaseApplicationGenerator {
                     */
 
                     if (sourceFile.includes('.java')) {
-                        const resolvedSourceFile =
+                        resolvedSourceFile =
                             namespace === 'jhipster-kotlin:spring-boot'
                                 ? this.templatePath(convertToKotlinFile(sourceFile))
                                 : this.templatePath(namespace.split(':').pop(), convertToKotlinFile(sourceFile));
@@ -302,6 +338,10 @@ export default class extends BaseApplicationGenerator {
                 await this.writeFiles({
                     sections: serverFiles,
                     context: application,
+                    customizeTemplatePath: file => {
+                        const sourceBasename = basename(file.sourceFile);
+                        return filesFromJHipster7TemplatesToIgnore.includes(sourceBasename) ? undefined : file;
+                    }
                 });
             },
             async writeSqlFiles({ application }) {
