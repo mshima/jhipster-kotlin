@@ -53,28 +53,11 @@ export default class extends BaseApplicationGenerator {
     }
 
     get [BaseApplicationGenerator.COMPOSING]() {
-        const mainComposing = super.composing;
         return this.asComposingTaskGroup({
             async composeDetekt() {
                 await this.composeWithJHipster('jhipster-kotlin:detekt');
             },
-            async composeWithPostWriting() {
-                await this.composeWithJHipster('docker');
-
-                if (this.jhipsterConfigWithDefaults.applicationType === 'gateway') {
-                    // Use gateway package.json scripts.
-                    await this.composeWithJHipster('jhipster:spring-cloud:gateway');
-                }
-            },
-            ...mainComposing,
-            async composing(...args) {
-                const { skipPriorities } = this.options;
-                if (this.jhipsterConfigWithDefaults.buildTool !== 'maven') {
-                    this.options.skipPriorities = ['postWriting'];
-                }
-                await mainComposing.composing.call(this, ...args);
-                this.options.skipPriorities = skipPriorities;
-            },
+            ...super.composing,
         });
     }
 
@@ -91,8 +74,6 @@ export default class extends BaseApplicationGenerator {
                     // Remove package-info.java files
                     file => (file.sourceFile.includes('package-info.java') ? undefined : file),
                     file => {
-                        // Don't use liquibase.gradle from liquibase generator
-                        if (['gradle/liquibase.gradle'].includes(file.sourceFile)) return undefined;
                         // Passthrough non liquibase files
                         if (!file.sourceFile.includes('src/main/resources/config/liquibase')) return file;
                         // Use master.xml from jhipster 7 templates
@@ -100,15 +81,12 @@ export default class extends BaseApplicationGenerator {
                         // Use liquibase templates from liquibase generator
                         return file.namespace === 'jhipster:liquibase' ? file : undefined;
                     },
-                    // Ignore gradle convention plugins
-                    file => (file.sourceFile.includes('buildSrc/src/main/groovy/') ? undefined : file),
                     // Ignore files from generators
                     file =>
                         [
                             'jhipster:spring-cloud:gateway',
                             'jhipster:spring-cloud-stream:kafka',
                             'jhipster:spring-cloud-stream:pulsar',
-                            'jhipster:gatling',
                         ].includes(file.namespace) && !file.sourceFile.includes('_entityPackage_')
                             ? undefined
                             : file,
@@ -125,6 +103,7 @@ export default class extends BaseApplicationGenerator {
                             'QuerySyntaxException.java',
                             '_enumName_.java',
                             '_persistClass_.java.jhi.jackson_identity_info',
+                            '_entityClass_GatlingTest.java',
                         ].includes(sourceBasename)
                             ? undefined
                             : file;
@@ -269,7 +248,7 @@ export default class extends BaseApplicationGenerator {
 
                 applicationDefaults({
                     __override__: true,
-                    gradleVersion: '7.6.4',
+                    gradleVersion: '8.9',
                 });
 
                 Object.assign(application.javaDependencies, {
@@ -452,6 +431,12 @@ export default class extends BaseApplicationGenerator {
                             'WebsocketSecurityConfiguration.java',
                             'ActivityService.java',
                             'ActivityDTO.java',
+                            // jhipster:java:jib
+                            'docker.gradle',
+                            // jhipster:java:code-quality
+                            'sonar.gradle',
+                            // jhipster:java:openapi-generator v7.6.1
+                            'swagger.gradle',
                         ].includes(sourceBasename)
                             ? undefined
                             : file;
@@ -532,9 +517,36 @@ export default class extends BaseApplicationGenerator {
                 const springdocDependency = `springdoc-openapi-${application.reactive ? 'webflux' : 'webmvc'}-core`;
                 source.addJavaDependencies?.([{ groupId: 'org.springdoc', artifactId: springdocDependency, version: '1.6.11' }]);
             },
-            addSpringBootPlugin: undefined,
             addFeignReactor: undefined,
-            async customizeMaven({ application, source }) {
+            async customizeDependencies({ application, source }) {
+                source.addJavaDefinition({
+                    dependencies: [
+                        { groupId: 'io.dropwizard.metrics', artifactId: 'metrics-core' },
+                        { groupId: 'org.zalando', artifactId: `problem-spring-${application.reactive ? 'webflux' : 'web'}` },
+                        {
+                            groupId: 'tech.jhipster',
+                            artifactId: 'jhipster-dependencies',
+                            version: application.jhipsterDependenciesVersion,
+                            type: 'pom',
+                            scope: 'import',
+                        },
+                    ],
+                });
+
+                if (application.authenticationTypeJwt) {
+                    source.addJavaDefinition({
+                        dependencies: [
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-api' },
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-impl', scope: 'runtime' },
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-jackson', scope: 'compile' },
+                        ],
+                    });
+                } else if (application.authenticationTypeOauth2) {
+                    source.addJavaDefinition({
+                        dependencies: [{ groupId: 'org.springframework.boot', artifactId: 'spring-boot-starter-oauth2-resource-server' }],
+                    });
+                }
+
                 if (application.databaseTypeMongodb) {
                     source.addJavaDefinition({
                         dependencies: [
@@ -543,8 +555,34 @@ export default class extends BaseApplicationGenerator {
                         ],
                     });
                 }
-
+                if (application.databaseTypeCassandra) {
+                    source.addJavaDefinition({
+                        dependencies: [{ groupId: 'org.cassandraunit', artifactId: 'cassandra-unit-spring' }],
+                    });
+                }
+                if (application.databaseTypeSql && application.reactive) {
+                    source.addJavaDefinition({
+                        dependencies: [{ groupId: 'org.apache.commons', artifactId: 'commons-collections4' }],
+                    });
+                }
+            },
+            customizeGradle({ application, source }) {
+                if (application.buildToolGradle) {
+                    source.addGradleProperty({ property: 'mapstructVersion', value: application.javaDependencies.mapstruct });
+                    source.addGradleProperty({ property: 'springBootVersion', value: application.javaDependencies['spring-boot'] });
+                    if (application.databaseTypeSql) {
+                        source.addGradleProperty({ property: 'hibernateVersion', value: application.javaDependencies.hibernate });
+                        source.addGradleProperty({ property: 'jaxbRuntimeVersion', value: '4.0.0' });
+                    }
+                    if (application.databaseTypeCassandra) {
+                        source.addGradleProperty({ property: 'cassandraDriverVersion', value: '4.14.1' });
+                    }
+                    source.addGradleDependencies([{ groupId: 'tech.jhipster', artifactId: 'jhipster-framework', scope: 'implementation' }]);
+                }
+            },
+            async customizeMaven({ application, source }) {
                 if (application.buildToolMaven) {
+                    /*
                     if (application.reactive) {
                         this.editFile('pom.xml', contents =>
                             contents.replace(
@@ -553,6 +591,7 @@ export default class extends BaseApplicationGenerator {
                             ),
                         );
                     }
+                    */
 
                     source.addMavenDefinition({
                         properties: [
@@ -563,16 +602,6 @@ export default class extends BaseApplicationGenerator {
                             { property: 'liquibase-hibernate5.version', value: application.javaDependencies.liquibase },
                             { property: 'liquibase.version', value: application.javaDependencies.liquibase },
                             { property: 'hibernate.version', value: application.javaDependencies.hibernate },
-                            { property: 'jhipster-dependencies.version', value: application.jhipsterDependenciesVersion },
-                        ],
-                        dependencyManagement: [
-                            {
-                                groupId: 'tech.jhipster',
-                                artifactId: 'jhipster-dependencies',
-                                version: '${jhipster-dependencies.version}',
-                                type: 'pom',
-                                scope: 'import',
-                            },
                         ],
                         dependencies: [
                             {
@@ -588,11 +617,6 @@ export default class extends BaseApplicationGenerator {
             </exclusions>`
                                     : '',
                             },
-                            { groupId: 'io.dropwizard.metrics', artifactId: 'metrics-core' },
-                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-api' },
-                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-impl', scope: 'runtime' },
-                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-jackson', scope: 'compile' },
-                            { groupId: 'org.zalando', artifactId: `problem-spring-${application.reactive ? 'webflux' : 'web'}` },
                         ],
                     });
                 }

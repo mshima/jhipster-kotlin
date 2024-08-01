@@ -81,7 +81,9 @@ ext {
 
 springBoot {
     buildInfo {
-        excludes = ['time']
+        properties {
+            time = null
+        }
     }
 }
 
