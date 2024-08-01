@@ -535,6 +535,15 @@ export default class extends BaseApplicationGenerator {
             addSpringBootPlugin: undefined,
             addFeignReactor: undefined,
             async customizeMaven({ application, source }) {
+                if (application.databaseTypeMongodb) {
+                    source.addJavaDefinition({
+                        dependencies: [
+                            { groupId: 'org.mongodb', artifactId: 'mongodb-driver-sync' },
+                            ...(application.reactive ? [{ groupId: 'org.mongodb', artifactId: 'mongodb-driver-reactivestreams' }] : []),
+                        ],
+                    });
+                }
+
                 if (application.buildToolMaven) {
                     if (application.reactive) {
                         this.editFile('pom.xml', contents =>
@@ -554,12 +563,13 @@ export default class extends BaseApplicationGenerator {
                             { property: 'liquibase-hibernate5.version', value: application.javaDependencies.liquibase },
                             { property: 'liquibase.version', value: application.javaDependencies.liquibase },
                             { property: 'hibernate.version', value: application.javaDependencies.hibernate },
+                            { property: 'jhipster-dependencies.version', value: application.jhipsterDependenciesVersion },
                         ],
                         dependencyManagement: [
                             {
                                 groupId: 'tech.jhipster',
                                 artifactId: 'jhipster-dependencies',
-                                version: '7.9.3',
+                                version: '${jhipster-dependencies.version}',
                                 type: 'pom',
                                 scope: 'import',
                             },
@@ -568,18 +578,20 @@ export default class extends BaseApplicationGenerator {
                             {
                                 groupId: 'tech.jhipster',
                                 artifactId: 'jhipster-framework',
-                                additionalContent: `
+                                additionalContent: application.reactive
+                                    ? `
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-webmvc</artifactId>
                 </exclusion>
-            </exclusions>`,
+            </exclusions>`
+                                    : '',
                             },
                             { groupId: 'io.dropwizard.metrics', artifactId: 'metrics-core' },
                             { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-api' },
                             { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-impl', scope: 'runtime' },
-                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-jackson' },
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-jackson', scope: 'compile' },
                             { groupId: 'org.zalando', artifactId: `problem-spring-${application.reactive ? 'webflux' : 'web'}` },
                         ],
                     });

@@ -74,7 +74,6 @@ export default class extends BaseApplicationGenerator {
                             .replaceAll('jakarta.', 'javax.')
                             .replaceAll('spring-cloud-stream-test-binder', 'spring-cloud-stream-test-support')
                             .replaceAll('org.hibernate.orm', 'org.hibernate')
-                            // .replaceAll('org.mongock', 'io.mongodb')
                             .replaceAll('mongock-springboot-v3', 'mongock-springboot')
                             .replaceAll('mongodb-springdata-v4-driver', 'mongodb-springdata-v3-driver')
                             .replaceAll('jackson-datatype-hibernate6', 'jackson-datatype-hibernate5')
@@ -83,14 +82,6 @@ export default class extends BaseApplicationGenerator {
                     if (application.buildToolMaven) {
                         this.editFile('pom.xml', content =>
                             content
-                                .replaceAll(
-                                    /<groupId>(org.mongodb)<\/groupId>((.*)<artifactId>mongodb-driver-sync<\/artifactId>)/g,
-                                    '<groupId>$1</groupId>$2',
-                                )
-                                .replaceAll(
-                                    /<groupId>(org.mongodb)<\/groupId>((.*)<artifactId>mongodb-driver-reactivestreams<\/artifactId>)/g,
-                                    '<groupId>$1</groupId>$2',
-                                )
                                 .replace('<useSpringBoot3>true</useSpringBoot3>', '')
                                 .replace(
                                     '<skipValidateSpec>false</skipValidateSpec>',
@@ -102,13 +93,10 @@ export default class extends BaseApplicationGenerator {
                         if (application.databaseTypeSql) {
                             const { javaDependencies } = application;
                             this.editFile('build.gradle', contents =>
-                                contents
-                                    // .replace('org.mongodb:mongodb-driver-sync', 'io.mongodb:mongodb-driver-sync')
-                                    // .replace('org.mongodb:mongodb-driver-reactivestreams', 'io.mongodb:mongodb-driver-reactivestreams')
-                                    .replace(
-                                        '\nconfigurations {',
-                                        '\nconfigurations {\n    liquibaseRuntime.extendsFrom sourceSets.main.compileClasspath\n',
-                                    ),
+                                contents.replace(
+                                    '\nconfigurations {',
+                                    '\nconfigurations {\n    liquibaseRuntime.extendsFrom sourceSets.main.compileClasspath\n',
+                                ),
                             );
                             this.editFile('gradle.properties', contents =>
                                 contents
