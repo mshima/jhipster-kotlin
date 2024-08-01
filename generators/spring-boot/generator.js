@@ -69,7 +69,9 @@ export default class extends BaseApplicationGenerator {
             ...mainComposing,
             async composing(...args) {
                 const { skipPriorities } = this.options;
-                this.options.skipPriorities = ['postWriting'];
+                if (this.jhipsterConfigWithDefaults.buildTool !== 'maven') {
+                    this.options.skipPriorities = ['postWriting'];
+                }
                 await mainComposing.composing.call(this, ...args);
                 this.options.skipPriorities = skipPriorities;
             },
@@ -272,6 +274,12 @@ export default class extends BaseApplicationGenerator {
 
                 Object.assign(application.javaDependencies, {
                     'spring-boot': SPRING_BOOT_VERSION,
+                    'spring-boot-dependencies': SPRING_BOOT_VERSION,
+                    'archunit-junit5': '0.22.0',
+                    liquibase: '4.15.0',
+                    hibernate: '5.6.10.Final',
+                });
+                Object.assign(application.springBootDependencies, {
                     'spring-boot-dependencies': SPRING_BOOT_VERSION,
                 });
 
@@ -520,7 +528,10 @@ export default class extends BaseApplicationGenerator {
         return this.asPostWritingTaskGroup({
             ...super.postWriting,
             addJHipsterBomDependencies: undefined,
-            addSpringdoc: undefined,
+            addSpringdoc({ application, source }) {
+                const springdocDependency = `springdoc-openapi-${application.reactive ? 'webflux' : 'webmvc'}-core`;
+                source.addJavaDependencies?.([{ groupId: 'org.springdoc', artifactId: springdocDependency, version: '1.6.11' }]);
+            },
             addSpringBootPlugin: undefined,
             addFeignReactor: undefined,
             async customizeMaven({ application, source }) {
@@ -538,6 +549,38 @@ export default class extends BaseApplicationGenerator {
                         properties: [
                             { property: 'modernizer-maven-plugin.version', value: application.javaDependencies['modernizer-maven-plugin'] },
                             { property: 'modernizer.failOnViolations', value: 'false' },
+                            { property: 'jaxb-runtime.version', value: '4.0.0' },
+                            { property: 'spring-boot.version', value: application.javaDependencies['spring-boot'] },
+                            { property: 'liquibase-hibernate5.version', value: application.javaDependencies.liquibase },
+                            { property: 'liquibase.version', value: application.javaDependencies.liquibase },
+                            { property: 'hibernate.version', value: application.javaDependencies.hibernate },
+                        ],
+                        dependencyManagement: [
+                            {
+                                groupId: 'tech.jhipster',
+                                artifactId: 'jhipster-dependencies',
+                                version: '7.9.3',
+                                type: 'pom',
+                                scope: 'import',
+                            },
+                        ],
+                        dependencies: [
+                            {
+                                groupId: 'tech.jhipster',
+                                artifactId: 'jhipster-framework',
+                                additionalContent: `
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
+            </exclusions>`,
+                            },
+                            { groupId: 'io.dropwizard.metrics', artifactId: 'metrics-core' },
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-api' },
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-impl', scope: 'runtime' },
+                            { groupId: 'io.jsonwebtoken', artifactId: 'jjwt-jackson' },
+                            { groupId: 'org.zalando', artifactId: `problem-spring-${application.reactive ? 'webflux' : 'web'}` },
                         ],
                     });
                 }

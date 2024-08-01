@@ -65,23 +65,60 @@ export default class extends BaseApplicationGenerator {
                 if (application.buildToolGradle) {
                     // JHipster 8 have needles fixed
                     this.editFile('build.gradle', contents => contents.replaceAll('//jhipster', '// jhipster'));
-                    if (application.databaseTypeSql) {
-                        const { javaDependencies } = application;
-                        this.editFile('build.gradle', contents =>
-                            contents.replace(
-                                '\nconfigurations {',
-                                '\nconfigurations {\n    liquibaseRuntime.extendsFrom sourceSets.main.compileClasspath\n',
-                            ),
-                        );
-                        this.editFile('gradle.properties', contents =>
-                            contents
-                                .replace(/liquibasePluginVersion=(.*)/, 'liquibasePluginVersion=2.2.2')
-                                .replace(/(checkstyleVersion)=(.*)/, `$1=${javaDependencies.checkstyle}`)
-                                .replace(/(noHttpCheckstyleVersion)=(.*)/, `$1=${javaDependencies['nohttp-checkstyle']}`),
-                        );
-                    }
                     this.editFile('settings.gradle', contents => contents.replaceAll('//jhipster', '// jhipster'));
                 }
+                this.delayTask(() => {
+                    this.editFile(application.buildToolGradle ? 'build.gradle' : 'pom.xml', content =>
+                        content
+                            .replace('micrometer-registry-prometheus-simpleclient', 'micrometer-registry-prometheus')
+                            .replaceAll('jakarta.', 'javax.')
+                            .replaceAll('spring-cloud-stream-test-binder', 'spring-cloud-stream-test-support')
+                            .replaceAll('org.hibernate.orm', 'org.hibernate')
+                            // .replaceAll('org.mongock', 'io.mongodb')
+                            .replaceAll('mongock-springboot-v3', 'mongock-springboot')
+                            .replaceAll('mongodb-springdata-v4-driver', 'mongodb-springdata-v3-driver')
+                            .replaceAll('jackson-datatype-hibernate6', 'jackson-datatype-hibernate5')
+                            .replaceAll('<classifier>jakarta</classifier>', ''),
+                    );
+                    if (application.buildToolMaven) {
+                        this.editFile('pom.xml', content =>
+                            content
+                                .replaceAll(
+                                    /<groupId>(org.mongodb)<\/groupId>((.*)<artifactId>mongodb-driver-sync<\/artifactId>)/g,
+                                    '<groupId>$1</groupId>$2',
+                                )
+                                .replaceAll(
+                                    /<groupId>(org.mongodb)<\/groupId>((.*)<artifactId>mongodb-driver-reactivestreams<\/artifactId>)/g,
+                                    '<groupId>$1</groupId>$2',
+                                )
+                                .replace('<useSpringBoot3>true</useSpringBoot3>', '')
+                                .replace(
+                                    '<skipValidateSpec>false</skipValidateSpec>',
+                                    '<importMappings>Problem=org.zalando.problem.Problem</importMappings><skipValidateSpec>false</skipValidateSpec>',
+                                ),
+                        );
+                    }
+                    if (application.buildToolGradle) {
+                        if (application.databaseTypeSql) {
+                            const { javaDependencies } = application;
+                            this.editFile('build.gradle', contents =>
+                                contents
+                                    // .replace('org.mongodb:mongodb-driver-sync', 'io.mongodb:mongodb-driver-sync')
+                                    // .replace('org.mongodb:mongodb-driver-reactivestreams', 'io.mongodb:mongodb-driver-reactivestreams')
+                                    .replace(
+                                        '\nconfigurations {',
+                                        '\nconfigurations {\n    liquibaseRuntime.extendsFrom sourceSets.main.compileClasspath\n',
+                                    ),
+                            );
+                            this.editFile('gradle.properties', contents =>
+                                contents
+                                    .replace(/liquibasePluginVersion=(.*)/, 'liquibasePluginVersion=2.2.2')
+                                    .replace(/(checkstyleVersion)=(.*)/, `$1=${javaDependencies.checkstyle}`)
+                                    .replace(/(noHttpCheckstyleVersion)=(.*)/, `$1=${javaDependencies['nohttp-checkstyle']}`),
+                            );
+                        }
+                    }
+                });
             },
         });
     }
