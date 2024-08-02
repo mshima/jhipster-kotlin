@@ -264,6 +264,7 @@ export default class extends BaseApplicationGenerator {
                     'archunit-junit5': '0.22.0',
                     liquibase: '4.15.0',
                     hibernate: '5.6.10.Final',
+                    'feign-reactor-bom': '3.3.0',
                 });
                 Object.assign(application.springBootDependencies, {
                     'spring-boot-dependencies': SPRING_BOOT_VERSION,
