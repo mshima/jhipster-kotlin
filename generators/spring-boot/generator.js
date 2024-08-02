@@ -108,9 +108,16 @@ export default class extends BaseApplicationGenerator {
                             ? undefined
                             : file;
                     },
+                    // Updated templates from v8
                     file => {
-                        // Use v8 files due to needles
-                        if (file.sourceFile.includes('resources/logback')) {
+                        if (!['jhipster-kotlin:spring-boot'].includes(file.namespace)) return file;
+                        if (
+                            // Use v8 files due to needles
+                            file.sourceFile.includes('resources/logback') ||
+                            // Updated gradle stack
+                            file.sourceFile.endsWith('.gradle') ||
+                            ['gradle.properties'].includes(basename(file.sourceFile))
+                        ) {
                             return {
                                 ...file,
                                 resolvedSourceFile: this.fetchFromInstalledJHipster('server/templates/', file.sourceFile),
@@ -541,13 +548,16 @@ export default class extends BaseApplicationGenerator {
                         ],
                     });
                 } else if (application.authenticationTypeOauth2) {
-                    /*
                     source.addJavaDefinition({
                         dependencies: [{ groupId: 'org.springframework.boot', artifactId: 'spring-boot-starter-oauth2-resource-server' }],
                     });
-                    */
                 }
 
+                if (application.applicationTypeGateway || application.applicationTypeMicroservice) {
+                    source.addJavaDefinition({
+                        dependencies: [{ groupId: 'org.springframework.cloud', artifactId: 'spring-cloud-starter-openfeign' }],
+                    });
+                }
                 if (application.databaseTypeMongodb) {
                     source.addJavaDefinition({
                         dependencies: [
