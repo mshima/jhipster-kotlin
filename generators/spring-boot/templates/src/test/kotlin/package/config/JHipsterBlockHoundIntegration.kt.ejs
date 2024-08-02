@@ -44,6 +44,7 @@ class JHipsterBlockHoundIntegration: BlockHoundIntegration {
 <%_ if (searchEngineElasticsearch) { _%>
         builder.allowBlockingCallsInside("org.elasticsearch.client.indices.CreateIndexRequest", "settings")
 <%_} _%>
+        // jhipster-needle-blockhound-integration - JHipster will add additional gradle plugins here
     }
 
 }
