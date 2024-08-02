@@ -267,6 +267,7 @@ export default class extends BaseApplicationGenerator {
                 });
                 Object.assign(application.springBootDependencies, {
                     'spring-boot-dependencies': SPRING_BOOT_VERSION,
+                    'spring-cloud-dependencies': '2021.0.3',
                 });
 
                 applicationDefaults({
@@ -519,7 +520,21 @@ export default class extends BaseApplicationGenerator {
     get [BaseApplicationGenerator.POST_WRITING]() {
         return this.asPostWritingTaskGroup({
             ...super.postWriting,
-            addJHipsterBomDependencies: undefined,
+            addJHipsterBomDependencies({ application, source }) {
+                const { applicationTypeGateway, applicationTypeMicroservice, serviceDiscoveryAny, messageBrokerAny, javaDependencies } =
+                    application;
+                if (applicationTypeGateway || applicationTypeMicroservice || serviceDiscoveryAny || messageBrokerAny) {
+                    source.addJavaDependencies?.([
+                        {
+                            groupId: 'org.springframework.cloud',
+                            artifactId: 'spring-cloud-dependencies',
+                            type: 'pom',
+                            scope: 'import',
+                            version: javaDependencies['spring-cloud-dependencies'],
+                        },
+                    ]);
+                }
+            },
             addSpringdoc({ application, source }) {
                 const springdocDependency = `springdoc-openapi-${application.reactive ? 'webflux' : 'webmvc'}-core`;
                 source.addJavaDependencies?.([{ groupId: 'org.springdoc', artifactId: springdocDependency, version: '1.6.11' }]);
