@@ -517,7 +517,6 @@ export default class extends BaseApplicationGenerator {
                 const springdocDependency = `springdoc-openapi-${application.reactive ? 'webflux' : 'webmvc'}-core`;
                 source.addJavaDependencies?.([{ groupId: 'org.springdoc', artifactId: springdocDependency, version: '1.6.11' }]);
             },
-            addFeignReactor: undefined,
             async customizeDependencies({ application, source }) {
                 source.addJavaDefinition({
                     dependencies: [
@@ -542,9 +541,11 @@ export default class extends BaseApplicationGenerator {
                         ],
                     });
                 } else if (application.authenticationTypeOauth2) {
+                    /*
                     source.addJavaDefinition({
                         dependencies: [{ groupId: 'org.springframework.boot', artifactId: 'spring-boot-starter-oauth2-resource-server' }],
                     });
+                    */
                 }
 
                 if (application.databaseTypeMongodb) {
@@ -571,6 +572,7 @@ export default class extends BaseApplicationGenerator {
                     source.addGradleProperty({ property: 'mapstructVersion', value: application.javaDependencies.mapstruct });
                     source.addGradleProperty({ property: 'springBootVersion', value: application.javaDependencies['spring-boot'] });
                     if (application.databaseTypeSql) {
+                        source.addGradleProperty({ property: 'liquibase.version', value: application.javaDependencies.liquibase });
                         source.addGradleProperty({ property: 'hibernateVersion', value: application.javaDependencies.hibernate });
                         source.addGradleProperty({ property: 'jaxbRuntimeVersion', value: '4.0.0' });
                     }
@@ -582,17 +584,6 @@ export default class extends BaseApplicationGenerator {
             },
             async customizeMaven({ application, source }) {
                 if (application.buildToolMaven) {
-                    /*
-                    if (application.reactive) {
-                        this.editFile('pom.xml', contents =>
-                            contents.replace(
-                                '<arg value="--include-engine"/>',
-                                '<jvmarg value="-XX:+AllowRedefinitionToAddDeleteMethods"/><arg value="--include-engine"/>',
-                            ),
-                        );
-                    }
-                    */
-
                     source.addMavenDefinition({
                         properties: [
                             { property: 'modernizer-maven-plugin.version', value: application.javaDependencies['modernizer-maven-plugin'] },
