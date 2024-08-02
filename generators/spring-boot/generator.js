@@ -266,6 +266,7 @@ export default class extends BaseApplicationGenerator {
                     hibernate: '5.6.10.Final',
                     'feign-reactor-bom': '3.3.0',
                     'spring-cloud-dependencies': '2021.0.3',
+                    'neo4j-migrations-spring-boot-starter': '1.10.1',
                 });
                 Object.assign(application.springBootDependencies, {
                     'spring-boot-dependencies': SPRING_BOOT_VERSION,
