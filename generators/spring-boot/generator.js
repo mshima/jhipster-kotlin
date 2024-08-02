@@ -248,7 +248,7 @@ export default class extends BaseApplicationGenerator {
                     if (!application.reactive) throw new Error('Blockhound is only supported by reactive applications');
 
                     this.editFile(
-                        `${KOTLIN_MAIN_SRC_DIR}config/JHipsterBlockHoundIntegration.kt`,
+                        `${KOTLIN_MAIN_SRC_DIR}${application.packageFolder}config/JHipsterBlockHoundIntegration.kt`,
                         createNeedleCallback({
                             needle: 'blockhound-integration',
                             contentToAdd: `builder.allowBlockingCallsInside("${classPath}", "${method}")`,
