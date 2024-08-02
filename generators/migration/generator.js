@@ -38,6 +38,12 @@ export default class extends BaseApplicationGenerator {
                                 .replaceAll('org.apache.cassandra', 'com.datastax.oss')
                                 // Gradle only
                                 .replace('hibernate-jcache"', 'hibernate-jcache:${hibernateVersion}"')
+                                .replace(
+                                    "excludes = ['time']",
+                                    `properties {
+            time = null
+        }`,
+                                )
                                 // Maven only
                                 .replaceAll('<classifier>jakarta</classifier>', '')
                                 .replace('<useSpringBoot3>true</useSpringBoot3>', '')

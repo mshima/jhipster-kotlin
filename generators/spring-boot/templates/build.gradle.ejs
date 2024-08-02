@@ -273,13 +273,4 @@ bootJar {
 
 compileJava.dependsOn processResources
 processResources.dependsOn bootBuildInfo
-<%_ if (enableSwaggerCodegen) { _%>
 
-tasks.withType(org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask.class).configureEach {
-    dependsOn 'openApiGenerate'
-}
-
-tasks.named('runKtlintFormatOverMainSourceSet').configure {
-    dependsOn 'openApiGenerate'
-}
-<%_ } _%>

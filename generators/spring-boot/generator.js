@@ -87,7 +87,7 @@ export default class extends BaseApplicationGenerator {
                             'jhipster:spring-cloud:gateway',
                             'jhipster:spring-cloud-stream:kafka',
                             'jhipster:spring-cloud-stream:pulsar',
-                        ].includes(file.namespace) && !file.sourceFile.includes('_entityPackage_')
+                        ].includes(file.namespace) && !file.sourceFile.includes('buildSrc')
                             ? undefined
                             : file,
                     // Kotling blueprint does not implements these files
