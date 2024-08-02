@@ -9,6 +9,7 @@ import { files as serverFiles } from 'jhipster-7-templates/esm/generators/server
 
 import { convertToKotlinFile } from '../kotlin/support/files.js';
 import migration from './migration.cjs';
+import { KOTLIN_MAIN_SRC_DIR } from './kotlin-constants.js';
 
 const { jhipsterConstants, jhipster7DockerContainers } = migration;
 const {
@@ -242,6 +243,19 @@ export default class extends BaseApplicationGenerator {
     get [BaseApplicationGenerator.PREPARING]() {
         return this.asPreparingTaskGroup({
             ...super.preparing,
+            blockhound({ application, source }) {
+                source.addAllowBlockingCallsInside = ({ classPath, method }) => {
+                    if (!application.reactive) throw new Error('Blockhound is only supported by reactive applications');
+
+                    this.editFile(
+                        `${KOTLIN_MAIN_SRC_DIR}config/JHipsterBlockHoundIntegration.kt`,
+                        createNeedleCallback({
+                            needle: 'blockhound-integration',
+                            contentToAdd: `builder.allowBlockingCallsInside("${classPath}", "${method}")`,
+                        }),
+                    );
+                };
+            },
             async preparingTemplateTask({ applicationDefaults }) {
                 applicationDefaults({
                     __override__: true,

@@ -6,7 +6,6 @@ export default class extends BaseApplicationGenerator {
         return this.asPreparingTaskGroup({
             async source({ source }) {
                 this.delayTask(() => {
-                    source.addAllowBlockingCallsInside = () => undefined;
                     source.addApplicationPropertiesContent = () => undefined;
                     source.addIntegrationTestAnnotation = () => undefined;
                     source.addTestSpringFactory = () => undefined;
