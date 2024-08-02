@@ -265,10 +265,10 @@ export default class extends BaseApplicationGenerator {
                     liquibase: '4.15.0',
                     hibernate: '5.6.10.Final',
                     'feign-reactor-bom': '3.3.0',
+                    'spring-cloud-dependencies': '2021.0.3',
                 });
                 Object.assign(application.springBootDependencies, {
                     'spring-boot-dependencies': SPRING_BOOT_VERSION,
-                    'spring-cloud-dependencies': '2021.0.3',
                 });
 
                 applicationDefaults({
