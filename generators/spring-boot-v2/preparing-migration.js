@@ -1,6 +1,6 @@
 import { asWritingTask } from 'generator-jhipster/generators/base-application/support';
 
-import migration from '../spring-boot/migration.cjs';
+import migration from '../spring-boot-v2/migration.cjs';
 
 const { jhipsterConstants, jhipster7DockerContainers } = migration;
 const {
