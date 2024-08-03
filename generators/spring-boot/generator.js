@@ -2,38 +2,22 @@ import { basename, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 // Use spring-boot as parent due to this context in generators
 import BaseApplicationGenerator from 'generator-jhipster/generators/spring-boot';
-import { prepareSqlApplicationProperties } from 'generator-jhipster/generators/spring-data-relational/support';
 import { getEnumInfo } from 'generator-jhipster/generators/base-application/support';
 import { createNeedleCallback } from 'generator-jhipster/generators/base/support';
 import { files as entityServerFiles } from 'jhipster-7-templates/esm/generators/entity-server';
 import { files as serverFiles } from 'jhipster-7-templates/esm/generators/server';
 
 import { convertToKotlinFile } from '../kotlin/support/files.js';
+import { migrateApplicationTask } from '../migration/preparing-migration.js';
 import migration from './migration.cjs';
 import { KOTLIN_TEST_SRC_DIR } from './kotlin-constants.js';
 
-const { jhipsterConstants, jhipster7DockerContainers } = migration;
-const {
-    DOCKER_COMPOSE_FORMAT_VERSION,
-    SPRING_BOOT_VERSION,
-    LIQUIBASE_VERSION,
-    HIBERNATE_VERSION,
-    JACOCO_VERSION,
-    JIB_VERSION,
-    GRADLE_VERSION,
-    JHIPSTER_DEPENDENCIES_VERSION,
-    JACKSON_DATABIND_NULLABLE_VERSION,
-    DOCKER_ELASTICSEARCH_CONTAINER,
-    ELASTICSEARCH_VERSION,
-    MAIN_DIR,
-} = jhipsterConstants;
+const { jhipsterConstants } = migration;
+const { MAIN_DIR } = jhipsterConstants;
 
 const jhipster7TemplatesPackage = dirname(fileURLToPath(import.meta.resolve('jhipster-7-templates/package.json')));
 
 const SERVER_MAIN_SRC_KOTLIN_DIR = `${MAIN_DIR}kotlin/`;
-
-const JAVA_VERSION = '17';
-const JAVA_COMPATIBLE_VERSIONS = ['17'];
 
 export default class extends BaseApplicationGenerator {
     constructor(args, options, features) {
@@ -54,13 +38,13 @@ export default class extends BaseApplicationGenerator {
     }
 
     async _postConstruct() {
+        await this.dependsOnJHipster('jhipster-kotlin:migration');
         // Use _postConstruct so kotlin will be queued before jhipster:spring-boot dependencies
         await this.dependsOnJHipster('jhipster:java:bootstrap');
         await this.dependsOnJHipster('jhipster-kotlin:kotlin');
     }
 
     async beforeQueue() {
-        await this.dependsOnJHipster('jhipster-kotlin:migration');
         await this.dependsOnJHipster('jhipster-kotlin:ktlint');
     }
 
@@ -205,49 +189,6 @@ export default class extends BaseApplicationGenerator {
                     },
                 );
             },
-            async migration({ application, applicationDefaults }) {
-                // Downgrade elasticsearch to 7.17.4
-                Object.assign(application.dockerContainers, {
-                    elasticsearchTag: '7.17.4',
-                    elasticsearch: `${DOCKER_ELASTICSEARCH_CONTAINER}:7.17.4`,
-                });
-                const dockerContainersVersions = Object.fromEntries(
-                    Object.entries({ ...application.dockerContainers, ...jhipster7DockerContainers }).map(([containerName, container]) => [
-                        `DOCKER_${this._.snakeCase(containerName).toUpperCase().replace('_4_', '4')}`,
-                        container,
-                    ]),
-                );
-
-                // Add variables required by V7 templates
-                applicationDefaults({
-                    ...dockerContainersVersions,
-                    testDir: application.packageFolder,
-                    javaDir: application.packageFolder,
-
-                    DOCKER_COMPOSE_FORMAT_VERSION,
-                    GRADLE_VERSION,
-                    SPRING_BOOT_VERSION,
-                    LIQUIBASE_VERSION,
-                    HIBERNATE_VERSION,
-                    JACOCO_VERSION,
-                    JIB_VERSION,
-                    JACKSON_DATABIND_NULLABLE_VERSION,
-                    DOCKER_ELASTICSEARCH_CONTAINER,
-                    ELASTICSEARCH_VERSION,
-                    otherModules: [],
-                    protractorTests: false,
-                });
-
-                Object.assign(application, {
-                    jhipsterDependenciesVersion: JHIPSTER_DEPENDENCIES_VERSION,
-                    JHIPSTER_DEPENDENCIES_VERSION,
-                    JAVA_COMPATIBLE_VERSIONS,
-                    javaCompatibleVersions: JAVA_COMPATIBLE_VERSIONS,
-                    JAVA_VERSION,
-                    javaVersion: JAVA_VERSION,
-                    SPRING_BOOT_VERSION,
-                });
-            },
         });
     }
 
@@ -273,40 +214,7 @@ export default class extends BaseApplicationGenerator {
                     useNpmWrapper: ({ clientFrameworkAny }) => clientFrameworkAny,
                 });
             },
-            async migration({ application, applicationDefaults }) {
-                // Kotlin templates uses devDatabaseType* without sql filtering.
-                prepareSqlApplicationProperties({ application });
-
-                applicationDefaults({
-                    __override__: true,
-                    gradleVersion: '8.9',
-                });
-
-                Object.assign(application.javaDependencies, {
-                    'spring-boot': SPRING_BOOT_VERSION,
-                    'spring-boot-dependencies': SPRING_BOOT_VERSION,
-                    'archunit-junit5': '0.22.0',
-                    liquibase: '4.15.0',
-                    hibernate: '5.6.10.Final',
-                    'feign-reactor-bom': '3.3.0',
-                    'spring-cloud-dependencies': '2021.0.3',
-                    'neo4j-migrations-spring-boot-starter': '1.10.1',
-                    'gradle-openapi-generator': '6.0.1',
-                    'openapi-generator-maven-plugin': '6.0.1',
-                    springdoc: '1.6.11',
-                });
-                Object.assign(application.springBootDependencies, {
-                    'spring-boot-dependencies': SPRING_BOOT_VERSION,
-                });
-
-                applicationDefaults({
-                    __override__: true,
-                    // V7 templates expects prodDatabaseType to be set for non SQL databases
-                    prodDatabaseType: ({ prodDatabaseType, databaseType }) => prodDatabaseType ?? databaseType,
-                    // V7 templates expects false instead of 'no'
-                    searchEngine: ({ searchEngine }) => (searchEngine === 'no' ? false : searchEngine),
-                });
-            },
+            migrateApplicationTask,
             addCacheNeedles({ source, application }) {
                 // Needle added in jhipster:spring-cache, delay to override it.
                 this.delayTask(() => {
