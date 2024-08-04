@@ -18,7 +18,7 @@ export default class extends BaseApplicationGenerator {
         super(args, options, { ...features, jhipster7Migration: true });
 
         this.jhipsterTemplatesFolders = [
-            this.templatePath('../../spring-boot/templates/'),
+            this.templatePath(''),
             join(jhipster7TemplatesPackage, 'generators/server/templates/'),
             join(jhipster7TemplatesPackage, 'generators/entity-server/templates/'),
         ];
