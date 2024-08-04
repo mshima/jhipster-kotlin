@@ -1,9 +1,11 @@
 import { basename, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 import BaseApplicationGenerator from 'generator-jhipster/generators/spring-boot';
 import { getEnumInfo } from 'generator-jhipster/generators/base-application/support';
 import { files as entityServerFiles } from 'jhipster-7-templates/esm/generators/entity-server';
 import { files as serverFiles } from 'jhipster-7-templates/esm/generators/server';
+import { convertToKotlinFile } from '../kotlin/support/files.js';
 import { migrateApplicationTask } from './preparing-migration.js';
 import migration from './migration.cjs';
 
@@ -18,6 +20,7 @@ export default class extends BaseApplicationGenerator {
         super(args, options, { ...features, jhipster7Migration: true });
 
         this.jhipsterTemplatesFolders = [
+            this.templatePath('../../spring-boot/templates'),
             this.templatePath(''),
             join(jhipster7TemplatesPackage, 'generators/server/templates/'),
             join(jhipster7TemplatesPackage, 'generators/entity-server/templates/'),
@@ -27,6 +30,104 @@ export default class extends BaseApplicationGenerator {
     get [BaseApplicationGenerator.PREPARING]() {
         return this.asPreparingTaskGroup({
             migrateApplicationTask,
+            ignoreSpringBootV3Files({ application }) {
+                application.customizeTemplatePaths.push(
+                    // ignore files from jhipster:spring-boot
+                    file => (file.namespace === 'jhipster:spring-boot' ? undefined : file),
+                    file => {
+                        // Passthrough non liquibase files
+                        if (!file.sourceFile.includes('src/main/resources/config/liquibase')) return file;
+                        // Use master.xml from jhipster 7 templates
+                        if (file.sourceFile.includes('master.xml')) return file.namespace === 'jhipster:liquibase' ? undefined : file;
+                        // Use liquibase templates from liquibase generator
+                        return file.namespace === 'jhipster:liquibase' ? file : undefined;
+                    },
+                    // Updated templates from v8
+                    file => {
+                        if (!['jhipster-kotlin:spring-boot-v2'].includes(file.namespace)) return file;
+                        if (
+                            // Use v8 files due to needles
+                            file.sourceFile.includes('resources/logback') ||
+                            // Updated gradle stack
+                            file.sourceFile.endsWith('.gradle') ||
+                            ['gradle.properties'].includes(basename(file.sourceFile))
+                        ) {
+                            return {
+                                ...file,
+                                resolvedSourceFile: this.fetchFromInstalledJHipster('server/templates/', file.sourceFile),
+                            };
+                        }
+                        return file;
+                    },
+                    file => {
+                        // We will only handle spring-boot-v2 here
+                        if (file.namespace !== 'jhipster-kotlin:spring-boot-v2') return file;
+                        let { resolvedSourceFile, sourceFile, destinationFile } = file;
+                        // Already resolved kotlin files
+                        if (resolvedSourceFile && (resolvedSourceFile.endsWith('.kt') || resolvedSourceFile.includes('.kt.'))) {
+                            return file;
+                        }
+
+                        if (sourceFile.includes('.java')) {
+                            // Kotlint User template does not implements Persistable api. Ignore for now.
+                            if (application.user && destinationFile.endsWith('UserCallback.java')) {
+                                return undefined;
+                            }
+
+                            // TestContainersSpringContextCustomizerFactory uses a single template for modularized (dbs) and non-modularized (kafka, etc) templates
+                            if (sourceFile.endsWith('TestContainersSpringContextCustomizerFactory.java')) {
+                                // Convert *TestContainersSpringContextCustomizerFactory to TestContainersSpringContextCustomizerFactory
+                                const adjustTestContainersSpringContextCustomizerFactoryFile = filename =>
+                                    filename.replace(
+                                        /(\w*)TestContainersSpringContextCustomizerFactory.java/,
+                                        'TestContainersSpringContextCustomizerFactory.java',
+                                    );
+                                sourceFile = adjustTestContainersSpringContextCustomizerFactoryFile(sourceFile);
+                                destinationFile = adjustTestContainersSpringContextCustomizerFactoryFile(destinationFile);
+                            }
+
+                            for (const fileMap of [
+                                ['/java/package/', '/java/_package_/'],
+                                ['/EntityMapper.', '/_entityClass_Mapper.'],
+                                ['/SecurityUtilsUnitTest.', '/SecurityUtilsUnitTest_imperative.'],
+                                ['/SecurityConfiguration.', '/SecurityConfiguration_imperative.'],
+                                ['/ExceptionTranslatorIT.', '/ExceptionTranslatorIT_imperative.'],
+                                ['/LogoutResource.', '/LogoutResource_imperative.'],
+                                ['/SpaWebFilter.', '/SpaWebFilter_reactive.'],
+                                ['EntityDTO', '_dtoClass_'],
+                                [/\/Entity(.*)\./, '/_entityClass_$1.'],
+                                ['/BaseEntityMapper.', '/EntityMapper.'],
+                            ]) {
+                                // Files renamed in v8
+                                sourceFile = sourceFile.replace(...fileMap);
+                            }
+                            sourceFile = convertToKotlinFile(sourceFile);
+                            resolvedSourceFile = this.templatePath('../../spring-boot/templates', sourceFile);
+                            if (!existsSync(`${resolvedSourceFile}.ejs`)) {
+                                const sourceBasename = basename(resolvedSourceFile);
+                                if (
+                                    ((/^(Public)?User(.*)\.kt/.test(sourceBasename) || /^Entity(.*)\.kt/.test(sourceBasename)) &&
+                                        !['UserJWTController.kt', 'UserJWTControllerIT.kt'].includes(sourceBasename)) ||
+                                    resolvedSourceFile.includes('_entityClass_') ||
+                                    resolvedSourceFile.includes('_dtoClass_')
+                                ) {
+                                    resolvedSourceFile = resolvedSourceFile.replace('_package_', '_package_/_entityPackage_');
+                                } else {
+                                    resolvedSourceFile = this.templatePath(sourceFile);
+                                }
+                            }
+                            return {
+                                ...file,
+                                sourceFile,
+                                javaResolvedSourceFile: file.resolvedSourceFile,
+                                resolvedSourceFile,
+                                destinationFile: convertToKotlinFile(destinationFile),
+                            };
+                        }
+                        return file;
+                    },
+                );
+            },
         });
     }
 
@@ -68,6 +169,8 @@ export default class extends BaseApplicationGenerator {
 
                         // Ignore files migrated to modularized templates
                         return [
+                            // jhipster-kotlin:kotlin
+                            'GeneratedByJHipster.java',
                             // jhipster:java:node
                             'npmw',
                             'npmw.cmd',
@@ -106,6 +209,11 @@ export default class extends BaseApplicationGenerator {
                             'UserSearchRepository.java',
                             // jhipster:spring-data-relational
                             'DatabaseConfiguration_sql.java',
+                            'UserSqlHelper.java',
+                            'ColumnConverter.java',
+                            'EntityManager.java',
+                            'application-testdev.yml',
+                            'application-testprod.yml',
                             // jhipster:cucumber
                             'CucumberIT.java',
                             'StepDefs.java',

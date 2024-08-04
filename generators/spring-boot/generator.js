@@ -1,4 +1,5 @@
-import { basename, join } from 'path';
+import { basename, dirname, join } from 'path';
+import { existsSync, mkdirSync, renameSync } from 'fs';
 // Use spring-boot as parent due to this context in generators
 import BaseApplicationGenerator from 'generator-jhipster/generators/base-application';
 import { createNeedleCallback } from 'generator-jhipster/generators/base/support';
@@ -51,19 +52,11 @@ export default class extends BaseApplicationGenerator {
                 application.customizeTemplatePaths.unshift(
                     // Remove package-info.java files
                     file => (file.sourceFile.includes('package-info.java') ? undefined : file),
-                    file => {
-                        // Passthrough non liquibase files
-                        if (!file.sourceFile.includes('src/main/resources/config/liquibase')) return file;
-                        // Use master.xml from jhipster 7 templates
-                        if (file.sourceFile.includes('master.xml')) return file.namespace === 'jhipster:liquibase' ? undefined : file;
-                        // Use liquibase templates from liquibase generator
-                        return file.namespace === 'jhipster:liquibase' ? file : undefined;
-                    },
                     // Ignore files from generators
                     file =>
                         [
-                            'jhipster:spring-boot',
                             'jhipster:spring-cloud:gateway',
+                            'jhipster:feign-client',
                             'jhipster:spring-cloud-stream:kafka',
                             'jhipster:spring-cloud-stream:pulsar',
                         ].includes(file.namespace) && !file.sourceFile.includes('buildSrc')
@@ -83,68 +76,73 @@ export default class extends BaseApplicationGenerator {
                             '_enumName_.java',
                             '_persistClass_.java.jhi.jackson_identity_info',
                             '_entityClass_GatlingTest.java',
+                            '_entityClass_CriteriaTest.java',
+
+                            'AccountResource_skipUserManagement.java',
+                            'TestAuthenticationResource.java',
+                            'SpaWebFilter_imperative.java',
+                            'SpaWebFilterIT_imperative.java',
+                            'SecurityJwtConfiguration.java',
+                            'AuthenticationIntegrationTest.java',
+                            'JwtAuthenticationTestUtils.java',
+                            'AuthenticationIntegrationTest.java',
+                            'SecurityInMemoryConfiguration.java',
+                            'TokenAuthenticationSecurityMetersIT.java',
+                            'TokenAuthenticationIT.java',
+                            'AuthenticateController.java',
+                            'AuthenticateControllerIT.java',
+                            'CRLFLogConverterTest.java',
+                            'SpaWebFilterIT_reactive.java',
+                            'SpaWebFilterTestController_reactive.java',
+                            'AccountResource_oauth2.java',
                         ].includes(sourceBasename)
                             ? undefined
                             : file;
                     },
-                    // Updated templates from v8
+                    // Prepare spring-boot v3 templates
                     file => {
-                        if (!['jhipster-kotlin:spring-boot-v2'].includes(file.namespace)) return file;
-                        if (
-                            // Use v8 files due to needles
-                            file.sourceFile.includes('resources/logback') ||
-                            // Updated gradle stack
-                            file.sourceFile.endsWith('.gradle') ||
-                            ['gradle.properties'].includes(basename(file.sourceFile))
-                        ) {
-                            return {
-                                ...file,
-                                resolvedSourceFile: this.fetchFromInstalledJHipster('server/templates/', file.sourceFile),
-                            };
+                        if (file.namespace === 'jhipster-kotlin:spring-boot-v2' || !file.sourceFile.includes('.java')) return file;
+                        const resolvedKotlinFile = this.templatePath(`${convertToKotlinFile(file.sourceFile)}.ejs`);
+                        if (existsSync(resolvedKotlinFile)) return file;
+                        const ktFile = convertToKotlinFile(file.sourceFile)
+                            .replace('_dtoClass_', 'EntityDTO')
+                            .replace('_entityClass_', 'Entity')
+                            .replace('LogoutResource_imperative.', 'LogoutResource.');
+                        for (const resolvedSourceFile of [
+                            this.templatePath('../../spring-boot-v2/templates', `${ktFile}.ejs`),
+                            this.templatePath('../../spring-boot-v2/templates', `${ktFile.replace('/_entityPackage_', '')}.ejs`),
+                        ]) {
+                            // Copy from v2 to v3 templates
+                            if (existsSync(resolvedSourceFile)) {
+                                mkdirSync(dirname(resolvedKotlinFile), { recursive: true });
+                                renameSync(resolvedSourceFile, resolvedKotlinFile);
+                                return file;
+                            }
+                        }
+                        if (file.namespace === 'jhipster:spring-boot') {
+                            // Print files that should be implemented for spring-boot v3
+                            console.log(`'${basename(file.sourceFile)}',`);
+                            throw new Error(file);
                         }
                         return file;
                     },
                     file => {
-                        let { resolvedSourceFile, sourceFile, destinationFile, namespace } = file;
+                        // We don't want to handle spring-boot-v2 templates here
+                        if (file.namespace === 'jhipster-kotlin:spring-boot-v2') return file;
+                        let { resolvedSourceFile: javaResolvedSourceFile, sourceFile, destinationFile, namespace: ns } = file;
                         // Already resolved kotlin files
-                        if (resolvedSourceFile.endsWith('.kt') || resolvedSourceFile.includes('.kt.')) {
+                        if (javaResolvedSourceFile && (javaResolvedSourceFile.endsWith('.kt') || javaResolvedSourceFile.includes('.kt.'))) {
                             return file;
                         }
 
-                        if (
-                            sourceFile.includes('.java') ||
-                            // Use local files with updated jhipster 7 templates for these files
-                            ['application-testprod.yml', 'application-testdev.yml'].includes(basename(file.sourceFile))
-                        ) {
+                        if (sourceFile.includes('.java')) {
                             // Kotlint User template does not implements Persistable api. Ignore for now.
                             if (application.user && destinationFile.endsWith('UserCallback.java')) {
                                 return undefined;
                             }
 
-                            const sourceBasename = basename(sourceFile);
-                            if (
-                                file.namespace === 'jhipster:spring-data-relational' &&
-                                ['UserSqlHelper_reactive.java', 'ColumnConverter_reactive.java', 'EntityManager_reactive.java'].includes(
-                                    sourceBasename,
-                                )
-                            ) {
-                                sourceFile = sourceFile.replace('_reactive', '');
-                            }
-
-                            const isCommonFile = filename => {
-                                const sourceBasename = basename(filename);
-                                if (['_entityClass_Repository.java', '_entityClass_Repository_reactive.java'].includes(sourceBasename)) {
-                                    return file.namespace !== 'spring-data-couchbase';
-                                }
-                                return ['TestContainersSpringContextCustomizerFactory.java'].includes(sourceBasename);
-                            };
-
                             // TestContainersSpringContextCustomizerFactory uses a single template for modularized (dbs) and non-modularized (kafka, etc) templates
                             if (sourceFile.endsWith('TestContainersSpringContextCustomizerFactory.java')) {
-                                if (isCommonFile(sourceFile)) {
-                                    // Use updated path
-                                    sourceFile = sourceFile.replace('/package/', '/_package_/');
-                                }
                                 // Convert *TestContainersSpringContextCustomizerFactory to TestContainersSpringContextCustomizerFactory
                                 const adjustTestContainersSpringContextCustomizerFactoryFile = filename =>
                                     filename.replace(
@@ -155,21 +153,26 @@ export default class extends BaseApplicationGenerator {
                                 destinationFile = adjustTestContainersSpringContextCustomizerFactoryFile(destinationFile);
                             }
 
-                            sourceFile = sourceFile.replace('/java/package/', '/java/_package_/');
-                            sourceFile =
-                                file.namespace === 'jhipster-kotlin:spring-boot-v2' || isCommonFile(sourceFile)
-                                    ? convertToKotlinFile(sourceFile)
-                                    : join(namespace.split(':').pop(), convertToKotlinFile(sourceFile));
-
-                            return {
-                                ...file,
-                                sourceFile,
-                                javaResolvedSourceFile: resolvedSourceFile,
-                                resolvedSourceFile: this.templatePath(sourceFile),
-                                destinationFile: convertToKotlinFile(destinationFile),
-                            };
+                            sourceFile = convertToKotlinFile(sourceFile);
+                            destinationFile = convertToKotlinFile(destinationFile);
                         }
-                        return file;
+
+                        const isCommonFile = filename => {
+                            const sourceBasename = basename(filename);
+                            if (['_entityClass_Repository.kt', '_entityClass_Repository_reactive.kt'].includes(sourceBasename)) {
+                                return ns !== 'spring-data-couchbase';
+                            }
+                            return ['TestContainersSpringContextCustomizerFactory.kt'].includes(sourceBasename);
+                        };
+
+                        const prefix = ns === 'jhipster:spring-boot' || isCommonFile(sourceFile) ? '' : ns.split(':').pop();
+                        sourceFile = join(prefix, sourceFile);
+                        const resolvedSourceInBlueprint = this.templatePath(sourceFile);
+                        const resolvedSourceFile = existsSync(`${resolvedSourceInBlueprint}.ejs`)
+                            ? resolvedSourceInBlueprint
+                            : javaResolvedSourceFile;
+
+                        return { ...file, sourceFile, javaResolvedSourceFile, resolvedSourceFile, destinationFile };
                     },
                 );
             },
