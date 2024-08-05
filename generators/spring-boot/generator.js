@@ -1,5 +1,5 @@
-import { basename, dirname, join } from 'path';
-import { existsSync, mkdirSync, renameSync } from 'fs';
+import { basename, join } from 'path';
+import { existsSync } from 'fs';
 // Use spring-boot as parent due to this context in generators
 import BaseApplicationGenerator from 'generator-jhipster/generators/base-application';
 import { createNeedleCallback } from 'generator-jhipster/generators/base/support';
@@ -55,7 +55,6 @@ export default class extends BaseApplicationGenerator {
                     // Ignore files from generators
                     file =>
                         [
-                            'jhipster:spring-boot',
                             'jhipster:spring-cloud:gateway',
                             'jhipster:feign-client',
                             'jhipster:spring-cloud-stream:kafka',
