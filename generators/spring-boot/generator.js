@@ -55,6 +55,7 @@ export default class extends BaseApplicationGenerator {
                     // Ignore files from generators
                     file =>
                         [
+                            'jhipster:spring-boot',
                             'jhipster:spring-cloud:gateway',
                             'jhipster:feign-client',
                             'jhipster:spring-cloud-stream:kafka',
@@ -98,33 +99,6 @@ export default class extends BaseApplicationGenerator {
                         ].includes(sourceBasename)
                             ? undefined
                             : file;
-                    },
-                    // Prepare spring-boot v3 templates
-                    file => {
-                        if (file.namespace === 'jhipster-kotlin:spring-boot-v2' || !file.sourceFile.includes('.java')) return file;
-                        const resolvedKotlinFile = this.templatePath(`${convertToKotlinFile(file.sourceFile)}.ejs`);
-                        if (existsSync(resolvedKotlinFile)) return file;
-                        const ktFile = convertToKotlinFile(file.sourceFile)
-                            .replace('_dtoClass_', 'EntityDTO')
-                            .replace('_entityClass_', 'Entity')
-                            .replace('LogoutResource_imperative.', 'LogoutResource.');
-                        for (const resolvedSourceFile of [
-                            this.templatePath('../../spring-boot-v2/templates', `${ktFile}.ejs`),
-                            this.templatePath('../../spring-boot-v2/templates', `${ktFile.replace('/_entityPackage_', '')}.ejs`),
-                        ]) {
-                            // Copy from v2 to v3 templates
-                            if (existsSync(resolvedSourceFile)) {
-                                mkdirSync(dirname(resolvedKotlinFile), { recursive: true });
-                                renameSync(resolvedSourceFile, resolvedKotlinFile);
-                                return file;
-                            }
-                        }
-                        if (file.namespace === 'jhipster:spring-boot') {
-                            // Print files that should be implemented for spring-boot v3
-                            console.log(`'${basename(file.sourceFile)}',`);
-                            throw new Error(file);
-                        }
-                        return file;
                     },
                     file => {
                         // We don't want to handle spring-boot-v2 templates here
