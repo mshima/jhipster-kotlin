@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2025 the original author or authors from the JHipster project.
+ * Copyright 2013-2024 the original author or authors from the JHipster project.
  *
  * This file is part of the JHipster project, see https://www.jhipster.tech/
  * for more information.
@@ -16,15 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { existsSync, readdirSync } from 'node:fs';
-import { getSamples } from './get-samples.mjs';
-import { entitiesByType, workflowSamples } from './support/index.mjs';
+import { GENERATOR_APP } from 'generator-jhipster/generators';
+import { getGithubSamplesGroup, getGithubSamplesGroups } from 'generator-jhipster/testing';
 
-const updateSampleName = sample =>
-    sample.replace('ngx', 'ng').replace('ms-ng-eureka-oauth2-mongodb-caffeine', 'ms-ng-oauth2-mongodb-caffeine');
-
-const revertSampleName = sample =>
-    sample.replace('ng-', 'ngx-').replace('ms-ng-oauth2-mongodb-caffeine', 'ms-ng-eureka-oauth2-mongodb-caffeine');
+const DEFAULT_SAMPLES_GROUP = 'samples';
 
 /**
  * @type {import('generator-jhipster').JHipsterCommandDefinition}
@@ -36,12 +31,39 @@ const command = {
         },
     },
     configs: {
+        samplesFolder: {
+            description: 'Path to the samples folder',
+            cli: {
+                type: String,
+            },
+            scope: 'generator',
+        },
+        samplesGroup: {
+            description: 'Samples group to lookup',
+            cli: {
+                type: String,
+            },
+            prompt: gen => ({
+                when: !gen.all && !gen.sampleName,
+                type: 'list',
+                message: 'which sample group do you want to lookup?',
+                choices: async () => getGithubSamplesGroups(gen.templatePath(gen.samplesFolder ?? '')),
+                default: DEFAULT_SAMPLES_GROUP,
+            }),
+            configure: gen => {
+                gen.samplesGroup ??= DEFAULT_SAMPLES_GROUP;
+            },
+            scope: 'generator',
+        },
         sampleName: {
             prompt: gen => ({
-                when: !gen.jdlSamples && !gen.appSample && !gen.all && existsSync(gen.templatePath(gen.samplesFolder)),
+                when: !gen.all,
                 type: 'list',
                 message: 'which sample do you want to generate?',
-                choices: async () => getSamples(gen.templatePath(gen.samplesFolder)),
+                choices: async answers => {
+                    const samples = await getGithubSamplesGroup(gen.templatePath(), answers.samplesFolder ?? gen.samplesFolder);
+                    return Object.keys(samples.samples);
+                },
             }),
             scope: 'generator',
         },
@@ -50,108 +72,11 @@ const command = {
             cli: {
                 type: Boolean,
             },
-            configure: gen => {
-                if (gen.all) {
-                    gen.generatorArgs = readdirSync(this.templatePath('samples'));
-                }
-            },
-            scope: 'generator',
-        },
-        samplesFolder: {
-            description: 'Path to the samples folder',
-            cli: {
-                type: String,
-            },
-            default: 'samples',
-            scope: 'generator',
-        },
-        entrypointGenerator: {
-            description: 'The generator to use as the entrypoint',
-            cli: {
-                type: String,
-            },
-            default: 'jdl',
-            scope: 'generator',
-        },
-        appSample: {
-            description: 'Sample name to generate',
-            cli: {
-                type: String,
-                env: 'JHI_APP',
-            },
-            configure: gen => {
-                if (gen.appSample && gen.appSample !== 'jdl') {
-                    gen.appSample = revertSampleName(gen.appSample);
-
-                    let { appSample } = gen;
-                    appSample = workflowSamples[appSample]?.['app-sample'] ?? appSample;
-                    gen.samplesFolder = `json-samples/${updateSampleName(appSample)}`;
-                    gen.entrypointGenerator = 'app';
-                }
-            },
-            scope: 'generator',
-        },
-        jdlSamples: {
-            description: 'Generate JDL samples',
-            cli: {
-                type: String,
-                env: 'JHI_JDL_APP',
-            },
-            configure: gen => {
-                if (gen.jdlSamples) {
-                    const [app, ...entities] = gen.jdlSamples.split(',');
-                    gen.samplesFolder = `jdl-samples/${updateSampleName(app)}`;
-                    gen.generatorArgs = '*.jdl';
-                    if (entities && entities.length > 0) {
-                        gen.supportingSamples.push(...entities.map(entity => `${entity}.jdl`));
-                    }
-                }
-            },
-            scope: 'generator',
-        },
-        entityType: {
-            description: 'Entity type to generate',
-            cli: {
-                env: 'JHI_ENTITY',
-                type: String,
-            },
-            configure: gen => {
-                let { entityType } = gen;
-                if (!entityType && gen.appSample) {
-                    entityType = workflowSamples[gen.appSample]?.entity;
-                }
-                if (entityType && entityType !== 'none') {
-                    gen.supportingSamples.push(...entitiesByType[entityType].map(entity => `.jhipster/${entity}.json`));
-                }
-            },
-            choices: [...Object.keys(entitiesByType), 'none'],
-            scope: 'generator',
-        },
-        jdlEntities: {
-            description: 'Generate JDL entities samples',
-            cli: {
-                type: String,
-                env: 'JHI_JDL_ENTITY',
-            },
-            configure: gen => {
-                let { jdlEntities } = gen;
-                if (!jdlEntities && gen.appSample) {
-                    jdlEntities = workflowSamples[gen.appSample]?.['jdl-entity'];
-                }
-                if (jdlEntities) {
-                    const entities = jdlEntities.split(',');
-                    gen.generatorArgs = '*.jdl';
-                    gen.entrypointGenerator = 'jdl';
-                    if (entities && entities.length > 0) {
-                        gen.supportingSamples.push(...entities.map(entity => `${entity}.jdl`));
-                    }
-                }
-            },
             scope: 'generator',
         },
     },
     options: {},
-    import: ['app', 'workspaces'],
+    import: [GENERATOR_APP],
 };
 
 export default command;

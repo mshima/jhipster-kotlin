@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2025 the original author or authors from the JHipster project.
+ * Copyright 2013-2024 the original author or authors from the JHipster project.
  *
  * This file is part of the JHipster project, see https://www.jhipster.tech/
  * for more information.
@@ -20,10 +20,6 @@
 const defaultCommands = {
     'generate-sample': {
         desc: 'Generate a test sample',
-        blueprint: '@jhipster/jhipster-dev',
-    },
-    synchronize: {
-        desc: 'Synchronize templates from generator-jhipster',
         blueprint: '@jhipster/jhipster-dev',
     },
 };
