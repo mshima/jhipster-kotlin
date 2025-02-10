@@ -8,6 +8,7 @@ export default defineConfig({
         setupFiles: ['./vitest.test-setup.ts'],
         env: {
             JHI_SKIP_GH_OUTPUT: true,
+            GITHUB_OUTPUT: '',
         },
     },
 });
