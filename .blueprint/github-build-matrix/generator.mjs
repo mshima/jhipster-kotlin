@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import process from 'node:process';
 import BaseGenerator from 'generator-jhipster/generators/base';
 import { convertToGitHubMatrix, getGithubOutputFile, getGithubSamplesGroup, setGithubTaskOutput } from 'generator-jhipster/testing';
 
@@ -27,7 +28,7 @@ export default class extends BaseGenerator {
                 this.matrix = convertToGitHubMatrix(samples);
                 const githubOutputFile = getGithubOutputFile();
                 this.log.info('matrix', this.matrix);
-                if (githubOutputFile) {
+                if (process.env.JHI_SKIP_GH_OUTPUT !== 'true' && githubOutputFile) {
                     setGithubTaskOutput('matrix', JSON.stringify(this.matrix));
                 }
             },
