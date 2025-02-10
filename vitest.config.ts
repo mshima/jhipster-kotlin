@@ -6,5 +6,8 @@ export default defineConfig({
         hookTimeout: 20000,
         exclude: [...defaultExclude.filter(val => val !== '**/cypress/**'), '**/templates/**', '**/resources/**'],
         setupFiles: ['./vitest.test-setup.ts'],
+        env: {
+            JHI_SKIP_GH_OUTPUT: true,
+        },
     },
 });
